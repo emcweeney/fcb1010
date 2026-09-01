@@ -16,12 +16,16 @@ from fcb1010 import fcb1010
 DUMPS_DIR = Path(__file__).resolve().parent.parent / "dumps"
 
 #   Global MIDI channels shared by every preset in banks 0-5.
-#   NOTE: fcb1010.py stores MIDI channel as a raw 0-15 byte (channel 1 = 0),
-#   matching standard MIDI status-byte convention. Verify against the real
-#   Voodoo Lab / Switch-Track units on first load - if nothing responds,
-#   this is the first thing to flip.
+#   fcb1010.py stores MIDI channel as a raw 0-15 byte (channel 1 = 0),
+#   matching standard MIDI status-byte convention.
 MESA_MIDI_CHANNEL = 0          # Voodoo Lab Control Switcher - MIDI Channel 1
+#   CONFIRMED 2026-08-31 against real hardware: scripts/send_test_cc.py 1 80 127
+#   made the Voodoo Lab's Mesa-channel LED react.
 SWITCHTRACK_MIDI_CHANNEL = 1   # Switch-Track - MIDI Channel 2
+#   CONFIRMED 2026-08-31 against real hardware: scripts/send_test_pc.py 2 3
+#   produced a real A-to-B transition (OUTB lit). Also confirms Switch-Track's
+#   factory preset table (PC1=A, PC3=B, PC5=A+B, PC7=Mute) is exactly as
+#   documented, no off-by-one in the program numbers.
 
 MESA_CHANNEL_CC = 80
 MESA_SOLO1_CC = 81
