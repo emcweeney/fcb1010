@@ -1,17 +1,24 @@
 # fcb1010
 Behringer FCB1010 pedalboard sysex interface
 
+## Repository layout
+
+- `scripts/` -- all Python code: the `fcb1010` sysex class and the tools built
+  on top of it (`bank_plan.py`, `dump_fcb1010.py`, `send_fcb1010.py`)
+- `dumps/` -- CSV exports/backups
+
+Run scripts from the repo root, e.g. `python3 scripts/bank_plan.py`; their default
+input/output paths point into `dumps/` regardless of your current directory.
+
 This Python code can send and receive MIDI system exclusive messages between a computer and Behringer FCB1010 pedalboard. Global settings for each parameter's MIDI channel are exchanged as well as the parameters for each of the 100 (10 banks of 10) presets. Global data is sent from the FCB1010 and may be viewed in the Python class but only MIDI channel data is set in the FCB1010 when sysex is received.
 
-Data may be printed out with the show_config function. Data may be stored to and recalled from a comma separated variable (CSV) file using save and load functions. The CSV file is in a specific format which allows simple editing within a spreadsheet. An example is provided in Open Document format which formats the data to allow (reasonably) simple viewing, filtering and editing. This can be saved as CVS then loaded into a Python fcb1010 object.
+Data may be printed out with the show_config function. Data may be stored to and recalled from a comma separated variable (CSV) file using save and load functions. The CSV file is in a specific format which allows simple editing within any spreadsheet application, or by editing the CSV text directly.
 
 This project has no affiliation with Behringer and sysex structure has been reverse engineered due to lack of documentation available. (This is unusual - most MIDI device manufacturer's provide sysex structure documentation.)
 
 This code works with standard FCB1010 V2.5 firmware. It has not been tested with other versions of the standard FCB1010 firmware nor any third party firmware.
 
 The main purpose of this software is to allow simple editing, backup and restore of FCB1010 configuration.
-
-In the repository is an Open Office Document format spreadsheet configured to allow filtering and editing of the data. Save spreadsheet as csv to create a file that can be used read and sent to FCB1010.
 
 # Example use:
 

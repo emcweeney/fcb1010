@@ -165,7 +165,7 @@ class fcb1010:
             self.preset[preset].expB_controller, offset = self.get_params(data, offset)
             self.preset[preset].expB_min, offset = self.get_params(data, offset)
             self.preset[preset].expB_max, offset = self.get_params(data, offset)
-            self.preset[preset].note, offset = self.get_params(data, offset)
+            self.preset[preset].note_value, offset = self.get_params(data, offset)
         self.pc1_midi_channel = data[2311]
         self.pc2_midi_channel = data[2312]
         self.pc3_midi_channel = data[2313]
@@ -347,9 +347,9 @@ class fcb1010:
             self.preset[preset].cc1_enabled = int(data[12]) == 1
             self.preset[preset].cc1_controller = int(data[13])
             self.preset[preset].cc1_value = int(data[14])
-            self.preset[preset].cc1_enabled = int(data[15]) == 1
-            self.preset[preset].cc1_controller = int(data[16])
-            self.preset[preset].cc1_value = int(data[17])
+            self.preset[preset].cc2_enabled = int(data[15]) == 1
+            self.preset[preset].cc2_controller = int(data[16])
+            self.preset[preset].cc2_value = int(data[17])
             self.preset[preset].switch1_enabled = int(data[18]) == 1
             self.preset[preset].switch2_enabled = int(data[19]) == 1
             self.preset[preset].expA_enabled = int(data[20]) == 1
@@ -370,7 +370,7 @@ class fcb1010:
     def save(self, filename='FCB1010.csv'):
         try:
             with open(filename, 'w') as file:
-                file.write('Global,,Program Change 1,,Program Change 2,,Program Change 3,,Program Change 4,,Program Change 5,,"Continuous\nController 1",,,"Continuous\nController 2",,,Switch 1,Switch 2,"Expression\nPedal A",,,,"Expression\nPedal B",,,,Note,\n')
+                file.write('Global,,Program Change 1,,Program Change 2,,Program Change 3,,Program Change 4,,Program Change 5,,Continuous Controller 1,,,Continuous Controller 2,,,Switch 1,Switch 2,Expression Pedal A,,,,Expression Pedal B,,,,Note,\n')
                 file.write("MIDI Channel,,%d,,%d,,%d,,%d,,%d,,%d,,,%d,,,N/A,N/A,%d,,,,%d,,,,%d,\n" % (
                     self.pc1_midi_channel,
                     self.pc2_midi_channel,
@@ -385,9 +385,9 @@ class fcb1010:
                 file.write('Bank,Preset,Enabled,Program,Enabled,Program,Enabled,Program,Enabled,Program,Enabled,Program,Enabled,Controller,Value,Enabled,Controller,Value,Enabled,Enabled,Enabled,Controller,Minimum,Maximum,Enabled,Controller,Minimum,Maximum,Enabled,Value\n')
                 for bank in range(10):
                     for offset in range(10):
-                        preset = (bank - 1) * 10 + offset - 1
+                        preset = bank * 10 + offset
                         file.write("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n" % (
-                        bank, offset,
+                        bank + 1, offset + 1,
                         self.preset[preset].pc1_enabled,
                         self.preset[preset].pc1_program,
                         self.preset[preset].pc2_enabled,
@@ -401,9 +401,9 @@ class fcb1010:
                         self.preset[preset].cc1_enabled,
                         self.preset[preset].cc1_controller,
                         self.preset[preset].cc1_value,
-                        self.preset[preset].cc1_enabled,
-                        self.preset[preset].cc1_controller,
-                        self.preset[preset].cc1_value,
+                        self.preset[preset].cc2_enabled,
+                        self.preset[preset].cc2_controller,
+                        self.preset[preset].cc2_value,
                         self.preset[preset].switch1_enabled,
                         self.preset[preset].switch2_enabled,
                         self.preset[preset].expA_enabled,
