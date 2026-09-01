@@ -1,6 +1,12 @@
 # fcb1010
 Behringer FCB1010 pedalboard sysex interface
 
+Fork of [riban-bw/fcb1010](https://github.com/riban-bw/fcb1010) (MIT licensed,
+see `LICENSE`). `scripts/fcb1010.py` is riban-bw's original sysex engine with a
+few bug fixes; everything else in `scripts/` is new tooling built on top of it
+for bulk-programming an FCB1010 rig via CSV instead of the device's own
+buttons.
+
 ## Repository layout
 
 - `scripts/` -- all Python code: the `fcb1010` sysex class and the tools built
