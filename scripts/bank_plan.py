@@ -1,19 +1,27 @@
 #   Bulk-program FCB1010 banks 0-5 (Mesa/Marshall/Bandit amp switching rig)
-#   per the locked bank plan, on top of an existing exported CSV dump.
+#   from data/fcb1010-patch-data.json, on top of an existing exported CSV dump.
 #
 #   Usage:
-#       python3 bank_plan.py [input.csv] [output.csv]
-#   Defaults: input=dumps/FCB1010_backup.csv, output=dumps/FCB1010_bank_plan.csv
+#       python3 bank_plan.py [input.csv] [output.csv] [patch-data.json]
+#   Defaults:
+#       input       = dumps/FCB1010_backup.csv
+#       output      = dumps/FCB1010_bank_plan.csv
+#       patch-data  = data/fcb1010-patch-data.json
 #
 #   Reuses fcb1010.py (riban-bw) as the read/write engine - this module only
-#   supplies the per-preset data and mutates an already-loaded fcb1010 object.
+#   supplies the per-preset data (from the JSON) and mutates an already-loaded
+#   fcb1010 object. Banks 6-9 and every global setting except the three MIDI
+#   channels below are left exactly as they came in from the input dump.
 
+import json
 import sys
 from pathlib import Path
 
 from fcb1010 import fcb1010
 
-DUMPS_DIR = Path(__file__).resolve().parent.parent / "dumps"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DUMPS_DIR = REPO_ROOT / "dumps"
+DATA_DIR = REPO_ROOT / "data"
 
 #   Global MIDI channels shared by every preset in banks 0-5.
 #   fcb1010.py stores MIDI channel as a raw 0-15 byte (channel 1 = 0),
@@ -27,91 +35,16 @@ SWITCHTRACK_MIDI_CHANNEL = 1   # Switch-Track - MIDI Channel 2
 #   factory preset table (PC1=A, PC3=B, PC5=A+B, PC7=Mute) is exactly as
 #   documented, no off-by-one in the program numbers.
 
-MESA_CHANNEL_CC = 80
-MESA_SOLO1_CC = 81
+MESA_CHANNEL_CC = 80          # Voodoo Lab relay 1 - Mesa Clean/Dirty
+#   CONFIRMED 2026-09-10 against real hardware with the BTPA cable connected:
+#   Control Switcher button 1 = Channel (CC80), button 2 = EQ (CC81, unused),
+#   button 3 = Solo 1 (CC82), button 4 = Solo 2 (CC83, unused). This matches
+#   data/fcb1010-patch-data.json and supersedes the earlier fcb1010-bank-plan.md,
+#   which had Solo1 on CC81 and no EQ relay.
+MESA_SOLO1_MUTE_CC = 82
 
-#   Switch-Track factory preset numbers (routing states)
-ST_A = 1        # Marshall only
-ST_B = 3        # Bandit only
-ST_AB = 5       # Both
-ST_MUTE = 7     # Neither
-
-#   One row per active switch (1-9) in banks 0-5, straight from
-#   fcb1010-bank-plan.md. Switch 10 in each of these banks is left empty.
-#
-#   Fields: (bank, switch, cc80_value, solo1_mute, marshall_relay, bandit_relay, switchtrack_pc)
-#   marshall_relay / bandit_relay: True=ON(Dirty) False=OFF(Clean) None=n/a (muted via routing, relay set OFF)
-BANK_PLAN = [
-    # Bank 0 - Mesa Clean
-    (0, 1, 0,   False, None,  None,  ST_MUTE),
-    (0, 2, 0,   False, False, None,  ST_A),
-    (0, 3, 0,   False, None,  False, ST_B),
-    (0, 4, 0,   False, False, False, ST_AB),
-    (0, 5, 0,   False, True,  None,  ST_A),
-    (0, 6, 0,   False, False, True,  ST_AB),
-    (0, 7, 0,   False, None,  True,  ST_B),
-    (0, 8, 0,   False, True,  False, ST_AB),
-    (0, 9, 0,   False, True,  True,  ST_AB),
-
-    # Bank 1 - Mesa Dirty
-    (1, 1, 127, False, None,  None,  ST_MUTE),
-    (1, 2, 127, False, False, None,  ST_A),
-    (1, 3, 127, False, None,  False, ST_B),
-    (1, 4, 127, False, False, False, ST_AB),
-    (1, 5, 127, False, True,  None,  ST_A),
-    (1, 6, 127, False, False, True,  ST_AB),
-    (1, 7, 127, False, None,  True,  ST_B),
-    (1, 8, 127, False, True,  False, ST_AB),
-    (1, 9, 127, False, True,  True,  ST_AB),
-
-    # Bank 2 - Marshall Clean
-    (2, 1, 0,   True,  False, None,  ST_A),
-    (2, 2, 0,   False, False, None,  ST_A),
-    (2, 3, 0,   True,  False, False, ST_AB),
-    (2, 4, 0,   False, False, False, ST_AB),
-    (2, 5, 127, False, False, None,  ST_A),
-    (2, 6, 0,   False, False, True,  ST_AB),
-    (2, 7, 0,   True,  False, True,  ST_AB),
-    (2, 8, 127, False, False, False, ST_AB),
-    (2, 9, 127, False, False, True,  ST_AB),
-
-    # Bank 3 - Marshall Dirty
-    (3, 1, 0,   True,  True,  None,  ST_A),
-    (3, 2, 0,   False, True,  None,  ST_A),
-    (3, 3, 0,   True,  True,  False, ST_AB),
-    (3, 4, 0,   False, True,  False, ST_AB),
-    (3, 5, 127, False, True,  None,  ST_A),
-    (3, 6, 0,   False, True,  True,  ST_AB),
-    (3, 7, 0,   True,  True,  True,  ST_AB),
-    (3, 8, 127, False, True,  False, ST_AB),
-    (3, 9, 127, False, True,  True,  ST_AB),
-
-    # Bank 4 - Bandit Clean
-    (4, 1, 0,   True,  None,  False, ST_B),
-    (4, 2, 0,   False, None,  False, ST_B),
-    (4, 3, 0,   True,  False, False, ST_AB),
-    (4, 4, 0,   False, False, False, ST_AB),
-    (4, 5, 127, False, None,  False, ST_B),
-    (4, 6, 0,   False, True,  False, ST_AB),
-    (4, 7, 0,   True,  True,  False, ST_AB),
-    (4, 8, 127, False, False, False, ST_AB),
-    (4, 9, 127, False, True,  False, ST_AB),
-
-    # Bank 5 - Bandit Dirty
-    (5, 1, 0,   True,  None,  True,  ST_B),
-    (5, 2, 0,   False, None,  True,  ST_B),
-    (5, 3, 0,   True,  False, True,  ST_AB),
-    (5, 4, 0,   False, False, True,  ST_AB),
-    (5, 5, 127, False, None,  True,  ST_B),
-    (5, 6, 0,   False, True,  True,  ST_AB),
-    (5, 7, 0,   True,  True,  True,  ST_AB),
-    (5, 8, 127, False, False, True,  ST_AB),
-    (5, 9, 127, False, True,  True,  ST_AB),
-]
-
-#   Preset indices (bank*10 + switch-1) intentionally left empty (switch 10
-#   in each of banks 0-5) - no PC/CC/relay messages sent.
-EMPTY_PRESETS = [bank * 10 + 9 for bank in range(6)]
+#   Banks covered by this dataset (0-5). Banks 6-9 are left untouched.
+PLANNED_BANKS = range(6)
 
 
 def _clear_preset(preset):
@@ -129,47 +62,80 @@ def _clear_preset(preset):
     preset.note_enabled = False
 
 
-def apply_bank_plan(fcb):
-    """Mutate an fcb1010 instance in place: set global channels and program
-    banks 0-5 (presets 0-59) per BANK_PLAN. Banks 6-9 and all global
-    settings other than the three MIDI channels below are left untouched,
-    so this should be applied on top of a real dump/backup, not a bare
-    default fcb1010()."""
+def load_patch_data(json_path):
+    with open(json_path) as file:
+        data = json.load(file)
+    return data["patches"]
+
+
+def apply_patch_data(fcb, patches):
+    """Mutate an fcb1010 instance in place: set the three shared MIDI channels
+    and program every preset in banks 0-5 from `patches`. Any switch position
+    in banks 0-5 not present in the data (e.g. switch 10) is cleared."""
     fcb.cc1_midi_channel = MESA_MIDI_CHANNEL
     fcb.cc2_midi_channel = MESA_MIDI_CHANNEL
     fcb.pc1_midi_channel = SWITCHTRACK_MIDI_CHANNEL
 
-    for bank, switch, cc80, solo_mute, marshall, bandit, st_pc in BANK_PLAN:
-        preset = fcb.preset[bank * 10 + (switch - 1)]
+    populated = set()
+    for patch in patches:
+        bank = patch["bank"]
+        switch = patch["switch"]
+        if bank not in PLANNED_BANKS or not 1 <= switch <= 10:
+            raise ValueError(f"patch bank/switch out of range: {bank}/{switch}")
+        index = bank * 10 + (switch - 1)
+        populated.add(index)
+
+        preset = fcb.preset[index]
         _clear_preset(preset)
+
+        #   Switch-Track routing - Program Change on MIDI channel 2
         preset.pc1_enabled = True
-        preset.pc1_program = st_pc
+        preset.pc1_program = patch["switchtrack_pc_channel2"]
+
+        #   Mesa channel select - CC80 on MIDI channel 1, sent on every patch
         preset.cc1_enabled = True
         preset.cc1_controller = MESA_CHANNEL_CC
-        preset.cc1_value = cc80
-        preset.cc2_enabled = solo_mute
-        preset.cc2_controller = MESA_SOLO1_CC
-        preset.cc2_value = 127 if solo_mute else 0
-        preset.switch1_enabled = bool(marshall)
-        preset.switch2_enabled = bool(bandit)
+        preset.cc1_value = patch["mesa"]["cc80_channel_value"]
 
-    for index in EMPTY_PRESETS:
-        _clear_preset(fcb.preset[index])
+        #   Mesa Solo1 mute - CC82 on MIDI channel 1, only when Mesa is not
+        #   part of the named combo (value is null otherwise). The controller/
+        #   value bytes are written even when disabled so the CSV is
+        #   deterministic regardless of what the input dump had in this slot.
+        solo_mute = patch["mesa"]["cc82_solo1_mute_value"]
+        preset.cc2_enabled = solo_mute is not None
+        preset.cc2_controller = MESA_SOLO1_MUTE_CC
+        preset.cc2_value = solo_mute if solo_mute is not None else 0
+
+        #   Marshall / Bandit channel - FCB1010's own built-in relays, not MIDI.
+        #   "on" = dirty channel selected; "off" or null = relay open (amp is
+        #   either on its clean channel or muted via Switch-Track routing).
+        preset.switch1_enabled = patch["marshall"]["fcb_switch1_relay"] == "on"
+        preset.switch2_enabled = patch["bandit"]["fcb_switch2_relay"] == "on"
+
+    for bank in PLANNED_BANKS:
+        for switch in range(1, 11):
+            index = bank * 10 + (switch - 1)
+            if index not in populated:
+                _clear_preset(fcb.preset[index])
 
 
 def main():
     in_file = sys.argv[1] if len(sys.argv) > 1 else str(DUMPS_DIR / "FCB1010_backup.csv")
     out_file = sys.argv[2] if len(sys.argv) > 2 else str(DUMPS_DIR / "FCB1010_bank_plan.csv")
+    json_file = sys.argv[3] if len(sys.argv) > 3 else str(DATA_DIR / "fcb1010-patch-data.json")
+
+    patches = load_patch_data(json_file)
 
     fcb = fcb1010()
     if not fcb.load(in_file):
         sys.exit(1)
 
-    apply_bank_plan(fcb)
+    apply_patch_data(fcb, patches)
 
     if not fcb.save(out_file):
         sys.exit(1)
-    print(f"Applied bank plan to banks 0-5, wrote {out_file}")
+    print(f"Applied {len(patches)} patches (banks 0-5) from {json_file}")
+    print(f"Wrote {out_file}")
 
 
 if __name__ == "__main__":

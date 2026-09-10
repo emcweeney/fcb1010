@@ -10,11 +10,29 @@ buttons.
 ## Repository layout
 
 - `scripts/` -- all Python code: the `fcb1010` sysex class and the tools built
-  on top of it (`bank_plan.py`, `dump_fcb1010.py`, `send_fcb1010.py`)
+  on top of it (`bank_plan.py`, `dump_fcb1010.py`, `send_fcb1010.py`,
+  `send_test_cc.py`, `send_test_pc.py`)
 - `dumps/` -- CSV exports/backups
+- `data/` -- source data for the bank plan (`fcb1010-patch-data.json`, the
+  canonical 54-patch dataset; `claude-code-fcb1010-brief.md`, the task brief)
 
 Run scripts from the repo root, e.g. `python3 scripts/bank_plan.py`; their default
-input/output paths point into `dumps/` regardless of your current directory.
+input/output/data paths resolve relative to the repo regardless of your current
+directory.
+
+## Bank-plan workflow (Mesa / Marshall / Bandit amp-switching rig)
+
+1. `python3 scripts/dump_fcb1010.py` -- capture the device's current state to
+   `dumps/FCB1010_backup.csv` (listen first, then trigger SYSEX SEND on the unit).
+2. `python3 scripts/bank_plan.py` -- read `data/fcb1010-patch-data.json`, apply
+   its 54 patches to banks 0-5 on top of the backup, write
+   `dumps/FCB1010_bank_plan.csv`. Banks 6-9 and every global setting except the
+   three shared MIDI channels are passed through untouched.
+3. `python3 scripts/send_fcb1010.py` -- push `dumps/FCB1010_bank_plan.csv` back
+   to the device as a SysEx dump.
+
+`send_test_cc.py` / `send_test_pc.py` send a single raw CC / Program Change for
+verifying MIDI-channel numbering and relay mapping against real hardware.
 
 This Python code can send and receive MIDI system exclusive messages between a computer and Behringer FCB1010 pedalboard. Global settings for each parameter's MIDI channel are exchanged as well as the parameters for each of the 100 (10 banks of 10) presets. Global data is sent from the FCB1010 and may be viewed in the Python class but only MIDI channel data is set in the FCB1010 when sysex is received.
 
