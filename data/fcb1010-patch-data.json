@@ -31,13 +31,13 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
@@ -53,13 +53,13 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
@@ -80,8 +80,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -102,8 +102,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -119,8 +119,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -141,8 +141,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -163,13 +163,13 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
@@ -190,8 +190,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -207,8 +207,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -256,8 +256,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -295,8 +295,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -361,13 +361,13 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
@@ -388,8 +388,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -405,8 +405,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -454,8 +454,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -493,8 +493,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -564,8 +564,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -586,8 +586,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -652,8 +652,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -762,8 +762,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -784,8 +784,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -850,8 +850,8 @@
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 1
     },
@@ -955,8 +955,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -977,8 +977,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -1043,8 +1043,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -1153,8 +1153,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -1175,8 +1175,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
@@ -1241,8 +1241,8 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": true,
