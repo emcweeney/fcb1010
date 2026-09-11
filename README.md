@@ -25,9 +25,10 @@ directory.
 1. `python3 scripts/dump_fcb1010.py` -- capture the device's current state to
    `dumps/FCB1010_backup.csv` (listen first, then trigger SYSEX SEND on the unit).
 2. `python3 scripts/bank_plan.py` -- read `data/fcb1010-patch-data.json`, apply
-   its 54 patches to banks 0-5 on top of the backup, write
-   `dumps/FCB1010_bank_plan.csv`. Banks 6-9 and every global setting except the
-   three shared MIDI channels are passed through untouched.
+   its 60 patches to banks 0-6 on top of the backup, write
+   `dumps/FCB1010_bank_plan.csv`. Bank 0 is isolated tone-building (each amp
+   alone); banks 1-6 are the combo banks. Banks 7-9 and every global setting
+   except the three shared MIDI channels are passed through untouched.
 3. `python3 scripts/send_fcb1010.py` -- push `dumps/FCB1010_bank_plan.csv` back
    to the device as a SysEx dump.
 

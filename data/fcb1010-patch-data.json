@@ -4,7 +4,7 @@
     "voodoo_lab_relay_map": {
       "relay1_cc80": "Mesa Channel (0=Clean, 127=Dirty)",
       "relay2_cc81": "Mesa EQ (unused per-patch, set manually on amp)",
-      "relay3_cc82": "Mesa Solo1 mute (0=off, 127=on)",
+      "relay3_cc82": "Mesa Solo1 mute (0=off, 127=on) - CONFIRMED against real hardware 2026-09-10",
       "relay4_cc83": "Mesa Solo2 mute (0=off, 127=on) -- unused in current patch set"
     },
     "voodoo_lab_midi_channel": 1,
@@ -16,7 +16,7 @@
       "7": "Mute (neither)"
     },
     "marshall_bandit_switching": "FCB1010 built-in relays (SWITCH1=Marshall, SWITCH2=Bandit), NOT MIDI messages",
-    "banks_6_to_9": "open, reserved for performance/favorites, not included in this dataset"
+    "banks_planned": "0-6 (0=isolated tone-building alone patches, 1-6=combo banks); 7-9 open, reserved for performance/favorites"
   },
   "patches": [
     {
@@ -44,6 +44,138 @@
     {
       "bank": 0,
       "switch": 2,
+      "function": "Mesa dirty (alone)",
+      "mesa": {
+        "channel": "dirty",
+        "muted": false,
+        "cc80_channel_value": 127,
+        "cc82_solo1_mute_value": null
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 3,
+      "function": "Marshall clean (alone)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": true,
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 1
+    },
+    {
+      "bank": 0,
+      "switch": 4,
+      "function": "Marshall dirty (alone)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": true,
+        "channel": "dirty",
+        "fcb_switch1_relay": "on"
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 1
+    },
+    {
+      "bank": 0,
+      "switch": 5,
+      "function": "Bandit clean (alone)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": true,
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
+      },
+      "switchtrack_pc_channel2": 3
+    },
+    {
+      "bank": 0,
+      "switch": 6,
+      "function": "Bandit dirty (alone)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": true,
+        "channel": "dirty",
+        "fcb_switch2_relay": "on"
+      },
+      "switchtrack_pc_channel2": 3
+    },
+    {
+      "bank": 1,
+      "switch": 1,
+      "function": "Mesa clean (alone)",
+      "mesa": {
+        "channel": "clean",
+        "muted": false,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": null
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 1,
+      "switch": 2,
       "function": "Mesa clean + Marshall clean",
       "mesa": {
         "channel": "clean",
@@ -64,7 +196,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 3,
       "function": "Mesa clean + Bandit clean",
       "mesa": {
@@ -86,7 +218,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 4,
       "function": "Mesa clean + Marshall clean + Bandit clean",
       "mesa": {
@@ -108,7 +240,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 5,
       "function": "Mesa clean + Marshall dirty",
       "mesa": {
@@ -130,7 +262,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 6,
       "function": "Mesa clean + Marshall clean + Bandit dirty",
       "mesa": {
@@ -152,7 +284,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 7,
       "function": "Mesa clean + Bandit dirty",
       "mesa": {
@@ -174,7 +306,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 8,
       "function": "Mesa clean + Marshall dirty + Bandit clean",
       "mesa": {
@@ -196,7 +328,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 0,
+      "bank": 1,
       "switch": 9,
       "function": "Mesa clean + Marshall dirty + Bandit dirty",
       "mesa": {
@@ -218,7 +350,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 1,
       "function": "Mesa dirty (alone)",
       "mesa": {
@@ -240,7 +372,7 @@
       "switchtrack_pc_channel2": 7
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 2,
       "function": "Mesa dirty + Marshall clean",
       "mesa": {
@@ -262,7 +394,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 3,
       "function": "Mesa dirty + Bandit clean",
       "mesa": {
@@ -284,7 +416,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 4,
       "function": "Mesa dirty + Marshall clean + Bandit clean",
       "mesa": {
@@ -306,7 +438,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 5,
       "function": "Mesa dirty + Marshall dirty",
       "mesa": {
@@ -328,7 +460,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 6,
       "function": "Mesa dirty + Marshall clean + Bandit dirty",
       "mesa": {
@@ -350,7 +482,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 7,
       "function": "Mesa dirty + Bandit dirty",
       "mesa": {
@@ -372,7 +504,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 8,
       "function": "Mesa dirty + Marshall dirty + Bandit clean",
       "mesa": {
@@ -394,7 +526,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 1,
+      "bank": 2,
       "switch": 9,
       "function": "Mesa dirty + Marshall dirty + Bandit dirty",
       "mesa": {
@@ -416,7 +548,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 1,
       "function": "Marshall clean (alone)",
       "mesa": {
@@ -438,7 +570,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 2,
       "function": "Marshall clean + Mesa clean",
       "mesa": {
@@ -460,7 +592,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 3,
       "function": "Marshall clean + Bandit clean",
       "mesa": {
@@ -482,7 +614,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 4,
       "function": "Marshall clean + Mesa clean + Bandit clean",
       "mesa": {
@@ -504,7 +636,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 5,
       "function": "Marshall clean + Mesa dirty",
       "mesa": {
@@ -526,7 +658,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 6,
       "function": "Marshall clean + Mesa clean + Bandit dirty",
       "mesa": {
@@ -548,7 +680,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 7,
       "function": "Marshall clean + Bandit dirty",
       "mesa": {
@@ -570,7 +702,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 8,
       "function": "Marshall clean + Mesa dirty + Bandit clean",
       "mesa": {
@@ -592,7 +724,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 2,
+      "bank": 3,
       "switch": 9,
       "function": "Marshall clean + Mesa dirty + Bandit dirty",
       "mesa": {
@@ -614,7 +746,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 1,
       "function": "Marshall dirty (alone)",
       "mesa": {
@@ -636,7 +768,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 2,
       "function": "Marshall dirty + Mesa clean",
       "mesa": {
@@ -658,7 +790,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 3,
       "function": "Marshall dirty + Bandit clean",
       "mesa": {
@@ -680,7 +812,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 4,
       "function": "Marshall dirty + Mesa clean + Bandit clean",
       "mesa": {
@@ -702,7 +834,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 5,
       "function": "Marshall dirty + Mesa dirty",
       "mesa": {
@@ -724,7 +856,7 @@
       "switchtrack_pc_channel2": 1
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 6,
       "function": "Marshall dirty + Mesa clean + Bandit dirty",
       "mesa": {
@@ -746,7 +878,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 7,
       "function": "Marshall dirty + Bandit dirty",
       "mesa": {
@@ -768,7 +900,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 8,
       "function": "Marshall dirty + Mesa dirty + Bandit clean",
       "mesa": {
@@ -790,7 +922,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 3,
+      "bank": 4,
       "switch": 9,
       "function": "Marshall dirty + Mesa dirty + Bandit dirty",
       "mesa": {
@@ -812,7 +944,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 1,
       "function": "Bandit clean (alone)",
       "mesa": {
@@ -834,7 +966,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 2,
       "function": "Bandit clean + Mesa clean",
       "mesa": {
@@ -856,7 +988,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 3,
       "function": "Bandit clean + Marshall clean",
       "mesa": {
@@ -878,7 +1010,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 4,
       "function": "Bandit clean + Mesa clean + Marshall clean",
       "mesa": {
@@ -900,7 +1032,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 5,
       "function": "Bandit clean + Mesa dirty",
       "mesa": {
@@ -922,7 +1054,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 6,
       "function": "Bandit clean + Mesa clean + Marshall dirty",
       "mesa": {
@@ -944,7 +1076,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 7,
       "function": "Bandit clean + Marshall dirty",
       "mesa": {
@@ -966,7 +1098,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 8,
       "function": "Bandit clean + Mesa dirty + Marshall clean",
       "mesa": {
@@ -988,7 +1120,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 4,
+      "bank": 5,
       "switch": 9,
       "function": "Bandit clean + Mesa dirty + Marshall dirty",
       "mesa": {
@@ -1010,7 +1142,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 1,
       "function": "Bandit dirty (alone)",
       "mesa": {
@@ -1032,7 +1164,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 2,
       "function": "Bandit dirty + Mesa clean",
       "mesa": {
@@ -1054,7 +1186,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 3,
       "function": "Bandit dirty + Marshall clean",
       "mesa": {
@@ -1076,7 +1208,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 4,
       "function": "Bandit dirty + Mesa clean + Marshall clean",
       "mesa": {
@@ -1098,7 +1230,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 5,
       "function": "Bandit dirty + Mesa dirty",
       "mesa": {
@@ -1120,7 +1252,7 @@
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 6,
       "function": "Bandit dirty + Mesa clean + Marshall dirty",
       "mesa": {
@@ -1142,7 +1274,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 7,
       "function": "Bandit dirty + Marshall dirty",
       "mesa": {
@@ -1164,7 +1296,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 8,
       "function": "Bandit dirty + Mesa dirty + Marshall clean",
       "mesa": {
@@ -1186,7 +1318,7 @@
       "switchtrack_pc_channel2": 5
     },
     {
-      "bank": 5,
+      "bank": 6,
       "switch": 9,
       "function": "Bandit dirty + Mesa dirty + Marshall dirty",
       "mesa": {

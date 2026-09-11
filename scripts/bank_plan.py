@@ -1,4 +1,4 @@
-#   Bulk-program FCB1010 banks 0-5 (Mesa/Marshall/Bandit amp switching rig)
+#   Bulk-program FCB1010 banks 0-6 (Mesa/Marshall/Bandit amp switching rig)
 #   from data/fcb1010-patch-data.json, on top of an existing exported CSV dump.
 #
 #   Usage:
@@ -10,7 +10,7 @@
 #
 #   Reuses fcb1010.py (riban-bw) as the read/write engine - this module only
 #   supplies the per-preset data (from the JSON) and mutates an already-loaded
-#   fcb1010 object. Banks 6-9 and every global setting except the three MIDI
+#   fcb1010 object. Banks 7-9 and every global setting except the three MIDI
 #   channels below are left exactly as they came in from the input dump.
 
 import json
@@ -23,7 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DUMPS_DIR = REPO_ROOT / "dumps"
 DATA_DIR = REPO_ROOT / "data"
 
-#   Global MIDI channels shared by every preset in banks 0-5.
+#   Global MIDI channels shared by every preset in banks 0-6.
 #   fcb1010.py stores MIDI channel as a raw 0-15 byte (channel 1 = 0),
 #   matching standard MIDI status-byte convention.
 MESA_MIDI_CHANNEL = 0          # Voodoo Lab Control Switcher - MIDI Channel 1
@@ -43,8 +43,9 @@ MESA_CHANNEL_CC = 80          # Voodoo Lab relay 1 - Mesa Clean/Dirty
 #   which had Solo1 on CC81 and no EQ relay.
 MESA_SOLO1_MUTE_CC = 82
 
-#   Banks covered by this dataset (0-5). Banks 6-9 are left untouched.
-PLANNED_BANKS = range(6)
+#   Banks covered by this dataset (0=isolated tone-building alone patches,
+#   1-6=combo banks). Banks 7-9 are left untouched.
+PLANNED_BANKS = range(7)
 
 
 def _clear_preset(preset):
@@ -70,8 +71,9 @@ def load_patch_data(json_path):
 
 def apply_patch_data(fcb, patches):
     """Mutate an fcb1010 instance in place: set the three shared MIDI channels
-    and program every preset in banks 0-5 from `patches`. Any switch position
-    in banks 0-5 not present in the data (e.g. switch 10) is cleared."""
+    and program every preset in banks 0-6 from `patches`. Any switch position
+    in banks 0-6 not present in the data (e.g. switch 10, or 7-10 in bank 0)
+    is cleared."""
     fcb.cc1_midi_channel = MESA_MIDI_CHANNEL
     fcb.cc2_midi_channel = MESA_MIDI_CHANNEL
     fcb.pc1_midi_channel = SWITCHTRACK_MIDI_CHANNEL
@@ -134,7 +136,7 @@ def main():
 
     if not fcb.save(out_file):
         sys.exit(1)
-    print(f"Applied {len(patches)} patches (banks 0-5) from {json_file}")
+    print(f"Applied {len(patches)} patches (banks 0-6) from {json_file}")
     print(f"Wrote {out_file}")
 
 
