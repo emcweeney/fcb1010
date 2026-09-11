@@ -99,12 +99,16 @@ def apply_patch_data(fcb, patches):
         preset.cc1_controller = MESA_CHANNEL_CC
         preset.cc1_value = patch["mesa"]["cc80_channel_value"]
 
-        #   Mesa Solo1 mute - CC82 on MIDI channel 1, only when Mesa is not
-        #   part of the named combo (value is null otherwise). The controller/
-        #   value bytes are written even when disabled so the CSV is
-        #   deterministic regardless of what the input dump had in this slot.
+        #   Mesa Solo1 mute - CC82 on MIDI channel 1, sent on every patch like
+        #   CC80. Voodoo Lab's Solo1 relay is stateful (stays wherever the last
+        #   CC82 left it) - sending it unconditionally, with an explicit 0 on
+        #   patches where Mesa should be audible, is what makes it release
+        #   after a muted patch instead of staying latched. (Bug found
+        #   2026-09-11: Mesa stayed muted after switching from e.g. "Marshall
+        #   dirty alone" to "Mesa clean" because CC82 was only sent when
+        #   muting, never to un-mute.)
         solo_mute = patch["mesa"]["cc82_solo1_mute_value"]
-        preset.cc2_enabled = solo_mute is not None
+        preset.cc2_enabled = True
         preset.cc2_controller = MESA_SOLO1_MUTE_CC
         preset.cc2_value = solo_mute if solo_mute is not None else 0
 
