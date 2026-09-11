@@ -1338,6 +1338,160 @@
         "fcb_switch2_relay": "on"
       },
       "switchtrack_pc_channel2": 5
+    },
+    {
+      "bank": 0,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 1,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 2,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 3,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 4,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 5,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 6,
+      "switch": 10,
+      "function": "All mute (silence)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "bandit": {
+        "present": false,
+        "channel": null,
+        "fcb_switch2_relay": null
+      },
+      "switchtrack_pc_channel2": 7
     }
   ]
 }

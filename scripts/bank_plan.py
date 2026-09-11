@@ -72,8 +72,8 @@ def load_patch_data(json_path):
 def apply_patch_data(fcb, patches):
     """Mutate an fcb1010 instance in place: set the three shared MIDI channels
     and program every preset in banks 0-6 from `patches`. Any switch position
-    in banks 0-6 not present in the data (e.g. switch 10, or 7-10 in bank 0)
-    is cleared."""
+    in banks 0-6 not present in the data (e.g. switches 7-9 in bank 0) is
+    cleared."""
     fcb.cc1_midi_channel = MESA_MIDI_CHANNEL
     fcb.cc2_midi_channel = MESA_MIDI_CHANNEL
     fcb.pc1_midi_channel = SWITCHTRACK_MIDI_CHANNEL
@@ -109,9 +109,20 @@ def apply_patch_data(fcb, patches):
         preset.cc2_value = solo_mute if solo_mute is not None else 0
 
         #   Marshall / Bandit channel - FCB1010's own built-in relays, not MIDI.
-        #   "on" = dirty channel selected; "off" or null = relay open (amp is
-        #   either on its clean channel or muted via Switch-Track routing).
-        preset.switch1_enabled = patch["marshall"]["fcb_switch1_relay"] == "on"
+        #   JSON values ("on" = dirty, "off"/null = clean or n/a) describe the
+        #   intended channel per data/fcb1010-bank-plan.md; whether that maps to
+        #   relay-closed or relay-open depends on how each amp's footswitch jack
+        #   is wired, and the two amps turned out to differ.
+        #
+        #   Bandit/SWITCH2: relay-closed = dirty, as originally assumed - "on"
+        #   maps straight to switch2_enabled=True.
+        #
+        #   Marshall/SWITCH1: CONFIRMED INVERTED against real hardware
+        #   2026-09-11 - Bank 3 (Marshall Clean, "off" on every patch) came out
+        #   dirty, and Bank 4 (Marshall Dirty, "on" on every patch) came out
+        #   clean. So for Marshall, relay-closed actually means clean; the
+        #   boolean below is inverted (== "off") to compensate.
+        preset.switch1_enabled = patch["marshall"]["fcb_switch1_relay"] == "off"
         preset.switch2_enabled = patch["bandit"]["fcb_switch2_relay"] == "on"
 
     for bank in PLANNED_BANKS:
