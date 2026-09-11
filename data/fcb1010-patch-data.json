@@ -1492,6 +1492,72 @@
         "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 7,
+      "function": "All mute (silence, amps set clean for lower standing noise)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
+      },
+      "bandit": {
+        "present": false,
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 8,
+      "function": "All mute (silence, amps set clean for lower standing noise)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
+      },
+      "bandit": {
+        "present": false,
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 9,
+      "function": "All mute (silence, amps set clean for lower standing noise)",
+      "mesa": {
+        "channel": "clean",
+        "muted": true,
+        "cc80_channel_value": 0,
+        "cc82_solo1_mute_value": 127
+      },
+      "marshall": {
+        "present": false,
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
+      },
+      "bandit": {
+        "present": false,
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
+      },
+      "switchtrack_pc_channel2": 7
     }
   ]
 }
