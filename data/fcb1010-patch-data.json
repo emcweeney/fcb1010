@@ -1342,7 +1342,7 @@
     {
       "bank": 0,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1351,20 +1351,20 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 1,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1373,20 +1373,20 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 2,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1395,20 +1395,20 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1417,20 +1417,20 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 4,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1439,20 +1439,20 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 5,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1461,20 +1461,20 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 6,
       "switch": 10,
-      "function": "All mute (silence)",
+      "function": "All mute (silence, amps set clean for lower standing noise)",
       "mesa": {
         "channel": "clean",
         "muted": true,
@@ -1483,13 +1483,13 @@
       },
       "marshall": {
         "present": false,
-        "channel": null,
-        "fcb_switch1_relay": null
+        "channel": "clean",
+        "fcb_switch1_relay": "off"
       },
       "bandit": {
         "present": false,
-        "channel": null,
-        "fcb_switch2_relay": null
+        "channel": "clean",
+        "fcb_switch2_relay": "off"
       },
       "switchtrack_pc_channel2": 7
     }
