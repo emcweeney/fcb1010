@@ -11,6 +11,11 @@ engineered SysEx parser/builder, unchanged in structure but with three bugs
 fixed (below). Everything else -- the bank-plan compiler, the MIDI test
 utilities, the patch data -- is new.
 
+## Thanks
+
+To riban-bw: this project only exists because that reverse-engineering work
+was already done and shared. Genuinely appreciated.
+
 ## What this actually is
 
 The FCB1010 has no published SysEx spec; riban-bw reverse-engineered the
