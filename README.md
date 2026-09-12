@@ -1,161 +1,171 @@
 # fcb1010
-Behringer FCB1010 pedalboard sysex interface
+A helper for programming a Behringer FCB1010 guitar pedalboard from a
+computer, instead of pressing its buttons over and over.
 
-> **This is a fork of [riban-bw/fcb1010](https://github.com/riban-bw/fcb1010)**
-> (MIT licensed, see `LICENSE`). `scripts/fcb1010.py` is riban-bw's original
-> sysex engine with a few bug fixes (see below); everything else in
-> `scripts/` and `data/` is new tooling built on top of it to bulk-program an
-> FCB1010 via CSV/JSON instead of its own front-panel buttons.
+> **This is a copy ("fork") of someone else's project:
+> [riban-bw/fcb1010](https://github.com/riban-bw/fcb1010).** It's free to
+> use and change (MIT license, see `LICENSE`). The file `scripts/fcb1010.py`
+> is their original code, with a few of their bugs fixed (listed below).
+> Everything else here is new, built on top of it.
 
-This code sends and receives MIDI System Exclusive messages between a
-computer and a Behringer FCB1010 (**stock V2.5 firmware** -- untested against
-other firmware, including third-party replacements). It reads/writes all 100
-presets (10 banks x 10 switches) plus the device's global MIDI-channel and
-config settings, round-tripping through a CSV file that's easy to bulk-edit.
-Sysex structure has no official Behringer documentation and was reverse
-engineered by riban-bw.
+## What is an FCB1010, and what does this code do?
 
-## Repository layout
+The FCB1010 is a floor pedal with 10 footswitches, split into 10 "banks" (so
+100 footswitches total, 10 at a time). Guitarists step on it to send
+commands to their amps and effects over MIDI -- a simple language musical
+gear uses to talk to each other, like "switch to channel 2" or "turn this
+knob to this exact value."
 
-- `scripts/` -- all Python code:
-  - `fcb1010.py` -- the sysex engine (parse/build sysex, load/save CSV).
-    Generic; works for any stock FCB1010.
-  - `dump_fcb1010.py` / `send_fcb1010.py` -- receive a full config from the
-    device / push one back, over MIDI. Generic.
-  - `send_test_cc.py` / `send_test_pc.py` -- send one raw CC or Program
-    Change message, for verifying MIDI-channel numbering and downstream
-    relay/routing behavior against real hardware. Generic.
-  - `bank_plan.py` -- bulk-programs banks 0-6 for **my specific rig** from
-    `data/fcb1010-patch-data.json`. Not generic -- see below.
-- `dumps/` -- CSV exports/backups of my FCB1010's config, plus a couple of
-  older note-bank CSVs from a previous (Bass Station II) use of this pedal.
-- `data/` -- the source data and docs behind `bank_plan.py`:
-  `fcb1010-patch-data.json` (the 60-patch dataset), `fcb1010-bank-plan.md`
-  (full narrative writeup of the rig and every patch), and the original task
-  brief.
+Programming a footswitch by hand means pressing buttons on the pedal itself,
+one setting at a time, for every single one of the 100 slots. This project
+lets you do it differently: write down what you want in a simple text file,
+then send the whole thing to the pedal in one go. Under the hood it works by
+having the computer "speak" the same private data format (called SysEx) that
+the FCB1010 uses to save and load its own settings -- nobody officially
+published this format, so `fcb1010.py`'s author figured it out by
+experimenting.
 
-Run scripts from the repo root, e.g. `python3 scripts/bank_plan.py`; their
-default input/output/data paths resolve relative to the repo regardless of
-your current directory.
+## What's in this folder
 
-## Using this generically (any FCB1010)
+- `scripts/` -- all the code:
+  - `fcb1010.py` -- reads and writes the FCB1010's data. Works for anyone
+    with this pedal.
+  - `dump_fcb1010.py` -- pulls the current settings off the pedal and saves
+    them to a file.
+  - `send_fcb1010.py` -- takes a settings file and sends it to the pedal.
+  - `send_test_cc.py` / `send_test_pc.py` -- send one single test message,
+    so you can check "does my amp switcher actually listen to this?" before
+    trusting a whole file to it.
+  - `bank_plan.py` -- **specific to my own setup** (see below), not
+    something you can use as-is.
+- `dumps/` -- backup files of my pedal's settings.
+- `data/` -- the description of my exact setup that `bank_plan.py` reads.
 
-The bottom of this file has riban-bw's original example: use `fcb1010.py`
-directly as a library to parse/build sysex from your own script.
+Run everything from this folder, e.g. `python3 scripts/bank_plan.py` --
+these scripts find their files no matter where you're standing when you run
+them.
 
-For a no-code workflow, the three top-level scripts cover the standard
-backup/edit/restore cycle:
+## Mistakes we found and fixed
 
-1. `python3 scripts/dump_fcb1010.py` -- put the FCB1010 into SYSEX SEND mode
-   (Global Config, footswitch #7 per the stock manual) and capture its
-   current state to a CSV.
-2. Edit the CSV -- by hand, in a spreadsheet, or with a script of your own --
-   then `fcb.load()` it back into an `fcb1010` object (see `bank_plan.py` for
-   an example of loading, mutating, and saving).
-3. `python3 scripts/send_fcb1010.py` -- put the FCB1010 into SYSEX RCV mode
-   and push the edited CSV back as a sysex dump.
+The original code (`fcb1010.py`) had three small bugs:
 
-`send_test_cc.py [channel] [controller] [value]` and
-`send_test_pc.py [channel] [program]` send one raw MIDI message each --
-useful for confirming what channel number/byte convention your downstream
-gear expects, independent of the FCB1010 entirely.
+- **A misspelled setting.** When reading a saved note value back in, the
+  code tried to store it under the wrong name, so that value was silently
+  thrown away instead of being read.
+- **Two settings sharing one slot.** Every preset can hold two separate
+  "Control Change" messages. The code was accidentally reading and writing
+  the *second* one's data into the *first* one's spot -- so the second
+  slot never actually worked at all.
+- **Off-by-one counting.** When saving to a file, the code numbered the 10
+  banks and 10 footswitches starting from the wrong number, which either
+  saved things to the wrong spot or made the saved file impossible to load
+  back in correctly.
 
-Each preset (`fcb1010_preset` in `fcb1010.py`) exposes exactly what the
-device's hardware supports and no more: 5 Program Changes (`pc1`..`pc5`,
-each with its own enable flag and program number), 2 Control Changes
-(`cc1`/`cc2`, each with enable/controller/value), the 2 built-in relay
-outputs (`switch1_enabled`/`switch2_enabled`), 2 expression-pedal
-configs (`expA`/`expB`, each with controller/min/max), and 1 note
-(`note_value`). Each message type's MIDI channel is a *global* setting
-(`fcb.pc1_midi_channel`, `fcb.cc1_midi_channel`, etc.) shared by every
-preset, not settable per-preset.
+All three are fixed now.
 
-## My rig: `bank_plan.py`
+## Using this for your own FCB1010
 
-I use one FCB1010 to switch between three amps (Mesa Mark V:35, Marshall
-DSL201, Peavey Bandit 112) with independent clean/dirty channel control on
-each, plus audio routing so combinations of amps can be selectively muted.
-Programming that by hand across 60 individual presets isn't practical, so
-`bank_plan.py` reads `data/fcb1010-patch-data.json` -- one JSON object per
-patch describing which amps are present, on which channel, and what MIDI/
-relay messages that implies -- and writes all 60 presets in one shot.
+If you just want to back up and edit your pedal's settings (any FCB1010,
+not just mine), here's the whole process:
 
-The full narrative (amp signal chain, MIDI wiring, why each CC number was
-chosen, per-bank tables) is in `data/fcb1010-bank-plan.md`. The short version
-of what `bank_plan.py` actually programs per patch:
+1. **Back it up.** Run `python3 scripts/dump_fcb1010.py`. On the pedal
+   itself, tell it to send its settings (in its Global Config menu, that's
+   footswitch #7). This saves everything to a file.
+2. **Edit the file.** Open it in a spreadsheet program, or a plain text
+   editor, or write a small script -- whatever's easiest. `bank_plan.py` is
+   an example of a script that edits a file like this automatically.
+3. **Send it back.** Run `python3 scripts/send_fcb1010.py`, and put the
+   pedal into its "receive" mode first so it's ready to listen.
 
-- 1 Program Change on MIDI channel 2, to a Mesa Switch-Track (audio routing)
-- 1-2 Control Changes on MIDI channel 1, to a Voodoo Lab Control Switcher
-  (Mesa's channel, and occasionally a Solo-mute)
-- The FCB1010's own built-in relay outputs (SWITCH1/SWITCH2), which control
-  the Marshall and Bandit amps' channel footswitch jacks directly -- not
-  MIDI messages at all
+`send_test_cc.py` and `send_test_pc.py` are for troubleshooting: they send
+one single message so you can watch what happens on your gear, without
+risking your whole setup.
 
-None of the specific CC numbers, relay assignments, or amp names in
-`bank_plan.py`/`fcb1010-patch-data.json` mean anything outside this exact
-rig -- this section exists to be explicit that it's a worked example, not a
-generic tool.
+Every footswitch slot on the FCB1010 can hold, at most: 5 "Program Change"
+messages, 2 "Control Change" messages, control over its own 2 built-in
+switches, 2 expression-pedal settings, and 1 musical note. That's the most
+any one footswitch can ever do -- it's a limit of the pedal itself, not
+something this code adds.
 
-## Adapting the bank-plan approach to your own rig
+## My own setup: `bank_plan.py`
 
-The reusable idea in `bank_plan.py` isn't the Mesa/Marshall/Bandit data --
-it's the pattern: **describe your rig's patches as structured data, then
-mechanically translate that into the FCB1010's fixed per-preset message
-slots.** That pattern only requires knowing two things about your own
-setup:
+I use one FCB1010 to control three guitar amps at once (a Mesa, a Marshall,
+and a Peavey), each with its own clean and "dirty"/distorted sound, plus
+which amps are actually making noise at any given moment. Programming all of
+that by hand, one footswitch at a time, would take forever -- so instead I
+wrote down every footswitch's job in a file (`data/fcb1010-patch-data.json`)
+and `bank_plan.py` turns that into the settings file the pedal understands.
 
-1. **What your other gear needs to hear.** Figure out, for each downstream
-   device (an amp switcher, a MIDI-controllable amp, a multi-effects unit,
-   whatever), which MIDI channel it listens on and which Program Change or
-   Control Change values do what you want. `send_test_cc.py`/
-   `send_test_pc.py` are built for exactly this discovery step -- send one
-   message at a time and watch what happens, before committing anything to
-   a full bank plan.
-2. **How that maps onto the FCB1010's slots.** Every preset has, at most,
-   5 PCs + 2 CCs + 2 built-in relays + 2 expression-pedal configs + 1 note
-   -- and each PC/CC's MIDI channel is shared across the whole device, not
-   per-preset. If your rig needs more independent MIDI channels than that
-   per patch, you'll hit the same ceiling this rig did (which is why Mesa's
-   channel and Switch-Track's routing were deliberately put on two
-   different channels sharing the device's 2 CC + PC1 slots, rather than
-   needing more).
+The full write-up of my amps, cables, and why I chose the settings I did
+lives in `data/fcb1010-bank-plan.md`. Short version of what each footswitch
+sends:
 
-Concretely, to reuse this for a different rig:
+- One message telling a separate audio-routing box which amps should
+  actually be able to make sound.
+- One or two messages telling another box to switch one amp's channel
+  (and sometimes to mute it).
+- Two built-in switches on the FCB1010 itself, wired directly to my other
+  two amps' own footswitch jacks -- no MIDI involved for those two at all.
 
-- Write your own patch-data JSON, structured however makes sense for your
-  gear (it doesn't need to match this repo's field names -- those are Mesa/
-  Voodoo-Lab-specific).
-- Copy `bank_plan.py`'s shape (`load_patch_data`, `apply_patch_data`,
-  `_clear_preset`) but replace the body of `apply_patch_data`'s per-patch
-  loop so it reads your JSON's fields and writes them onto the preset's
-  actual attributes (`preset.pc1_enabled`/`pc1_program`, `preset.cc1_*`/
-  `cc2_*`, `preset.switch1_enabled`/`switch2_enabled`, etc.) instead of the
-  Mesa-specific ones.
-- Set `fcb.pc1_midi_channel`/`cc1_midi_channel`/etc. to whatever channels
-  your gear actually listens on (see the "0 = channel 1" note below).
-- Everything else -- CSV load/save, the dump/send scripts, `PLANNED_BANKS`
-  as a way to leave some banks untouched -- carries over unchanged.
+None of the specific numbers here will mean anything on someone else's
+setup -- this part is a real example of my own gear, not a generic tool.
 
-## Notes from testing against real hardware
+## Want to do something like this for your own gear?
 
-- `fcb1010.py` stores each MIDI channel as a raw 0-15 byte matching the
-  standard MIDI status-byte convention: **channel 1 is stored as `0`**, not
-  `1`. Confirmed by sending a raw CC on wire-byte `0` and observing a
-  hardware device configured for "Channel 1" react to it.
-- The per-preset `switch1_enabled`/`switch2_enabled` flags are **not**
-  inverted the way the PC/CC enable flags are in the raw sysex (see
-  `parse_sysex`/`get_raw_sysex` in `fcb1010.py`) -- a quirk worth knowing if
-  you're reading the class implementation rather than just using it.
+You don't need my settings -- you need the idea. It's: **write down what you
+want each footswitch to do, as plain data, then have a script turn that data
+into the pedal's own file format.** To do that for your own rig:
+
+1. **Figure out what your gear listens for.** For each piece of gear you
+   want to control, find out which MIDI "channel" it listens on, and which
+   messages make it do what you want. `send_test_cc.py`/`send_test_pc.py`
+   are built for exactly this -- try one message, see what happens, before
+   writing a whole plan.
+2. **Remember the pedal's limit.** Every footswitch can only send 5 Program
+   Changes and 2 Control Changes (plus its 2 built-in switches). If your
+   plan needs more than that on one footswitch, you'll have to get clever
+   about sharing those slots, the same way this project shares its 2
+   Control Changes between two different amp functions.
+3. **Write your own version of `bank_plan.py`.** Copy its shape, but swap
+   out the part that reads my data for a part that reads yours, and have it
+   set the pedal's own fields (things like `pc1_enabled`, `cc1_controller`,
+   `switch1_enabled`) using your values instead of mine.
+
+Everything else -- backing up, sending, and the general pattern -- works the
+same no matter whose gear is on the other end.
+
+## Things we only learned by testing on real hardware
+
+- The pedal stores MIDI channel numbers starting at 0, not 1. So "channel 1"
+  is actually saved as the number `0`. We only found this out by sending a
+  test message and watching a real device react to it.
+- One pair of settings (`switch1_enabled`/`switch2_enabled`) behaves
+  opposite to how the similar-looking Program Change/Control Change settings
+  work internally -- a quirk only visible if you read the raw code, not if
+  you just use it.
+- **Don't assume two amps are wired the same way.** One of my amps'
+  channel-switching relay turned out to be backwards from what we expected
+  -- flipping the switch "on" actually picked the amp's clean sound, not its
+  dirty one. The other amp was wired the way we expected. We only found this
+  by testing each amp separately, not by assuming they'd match.
+- **Some messages need to be sent every single time, not just when you want
+  something to happen.** One "mute" message only turns muting on or off when
+  you actually send it -- it doesn't reset itself. We were only sending it
+  to turn muting *on*, never to turn it back *off*, so an amp could get
+  stuck muted after switching away from that footswitch. The fix was to
+  send that message on every single footswitch, telling it to un-mute
+  everywhere it wasn't specifically supposed to be muted.
 
 ---
+
+Everything below this line is the original author's own instructions for
+using `fcb1010.py` directly in your own Python code, kept as-is:
 
 Data may be printed out with the `show_config` function. Data may be stored
 to and recalled from a comma separated variable (CSV) file using `save` and
 `load` functions. The CSV file is in a specific format which allows simple
 editing within any spreadsheet application, or by editing the CSV text
 directly.
-
-# Example use (direct library use, from riban-bw's original README):
 
 ```
 from fcb1010 import fcb1010
