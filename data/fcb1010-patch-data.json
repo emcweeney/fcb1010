@@ -20,10 +20,10 @@
     "mesa_control_switcher_midi_channel": 1,
     "switchtrack_midi_channel": 2,
     "switchtrack_pc_meanings_in_use": {
-      "3": "Peavey audible (Switch-Track OUTB)",
+      "1": "Peavey audible (Switch-Track OUTA - moved here 2026-09-14 from OUTB)",
       "7": "Mute (Peavey silent)"
     },
-    "switchtrack_note": "Marshall's old OUTA leg is now unplugged/unused. Only PC3 and PC7 are meaningful with a single remaining Switch-Track amp.",
+    "switchtrack_note": "Peavey's audio cable moved from Switch-Track OUTB to OUTA (Marshall's old, now-unused audio leg) 2026-09-14, consolidating alongside the earlier SWITCH1 relay move. Only PC1 and PC7 are meaningful now with a single remaining Switch-Track amp.",
     "peavey_switching": "FCB1010 built-in relay SWITCH1 (fcb_switch1_relay: on=dirty, off=clean). Moved here from SWITCH2 on 2026-09-14, consolidating onto SWITCH1 since Marshall (SWITCH1's original amp) is out and not expected back. Polarity carried over from the SWITCH2 confirmation (2026-09-11) on the assumption that it's a property of Peavey's own footswitch jack, not of which FCB1010 relay drives it - NOT independently re-verified on SWITCH1 yet.",
     "mesa_modes_note": "Bank 0 = Clean-oriented section bank: Mesa Clean alone (both EQ states) + Mesa Clean x Peavey combos (both EQ states x both Peavey states), no Peavey-alone. Bank 1 = Dirty-oriented section bank, same shape with Mesa Dirty. Mixes single-amp and stereo-combo tones per bank for dynamics within a song section, rather than segregating by category. Bank 9 = single-amp reference for both amps (still has Peavey Clean/Dirty alone, if still wanted)."
   },
@@ -62,7 +62,7 @@
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 0,
@@ -74,7 +74,7 @@
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 0,
@@ -86,7 +86,7 @@
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 0,
@@ -98,7 +98,7 @@
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 0,
@@ -182,7 +182,7 @@
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 1,
@@ -194,7 +194,7 @@
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 1,
@@ -206,7 +206,7 @@
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 1,
@@ -218,7 +218,7 @@
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 1,
@@ -326,7 +326,7 @@
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 3,
@@ -338,7 +338,7 @@
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "switchtrack_pc_channel2": 3
+      "switchtrack_pc_channel2": 1
     },
     {
       "bank": 3,
