@@ -89,18 +89,43 @@ setting, not per-preset.
 
 ## The rig this was built for
 
-Three amps switched from one FCB1010: a Mesa Mark V:35 (MIDI, via a Voodoo
-Lab Control Switcher and a BTPA interface cable into Mesa's proprietary
-5-pin DIN jack), a Marshall DSL201 and a Peavey Bandit 112 (both via the
-FCB1010's own built-in relay outputs, no MIDI), and a Mesa Switch-Track
-handling which amps are actually routed audio. Full narrative --
-signal chain, why each CC number, per-bank tables -- is in
-`data/fcb1010-bank-plan.md`; `data/fcb1010-patch-data.json` is the structured
-form `bank_plan.py` actually compiles, currently 70 patches across banks
-0-6 (banks 7-9 open). Per patch: one Program Change (MIDI ch. 2, to
-Switch-Track), up to two Control Changes (MIDI ch. 1, to the Control
-Switcher -- Mesa's channel, and Mesa's Solo-mute), and the two built-in
-relays.
+**As of 2026-09-14: Mesa Mark V:35 + Peavey Bandit 112 only.** A Marshall
+DSL201 was originally part of this rig (controlled via the FCB1010's own
+built-in SWITCH1 relay) but is currently disconnected -- amp trouble, unknown
+how long it's out or whether it comes back. The 3-amp version of everything
+below is fully recoverable from git history if it does.
+
+Two amps switched from one FCB1010: Mesa (MIDI, via a Voodoo Lab Control
+Switcher and a BTPA interface cable into Mesa's proprietary 5-pin DIN jack)
+and Peavey (via the FCB1010's own built-in SWITCH1 relay -- consolidated onto
+it from SWITCH2 once Marshall, SWITCH1's original amp, was disconnected), plus
+a Mesa Switch-Track deciding whether Peavey is actually routed audio.
+`data/fcb1010-patch-data.json` is the structured form `bank_plan.py`
+compiles -- 30 patches across three banks, banks 2 and 4-8 open. Banks 0/1 are
+organized by song-section energy rather than by category, mixing single-amp
+and stereo-combo (both amps at once, genuinely stereo since Mesa and Peavey
+sit on separate legs of the pedalboard's stereo split) tones together so
+either kind of dynamic is one switch away within a section:
+
+- **Bank 0** -- Clean-oriented section: Mesa Clean alone (both EQ states),
+  plus Mesa Clean x Peavey combos (both EQ states x both Peavey states)
+- **Bank 1** -- Dirty-oriented section, same shape with Mesa Dirty
+- **Bank 3** -- single-amp reference for both amps: Mesa's four states, then
+  Peavey's two (including Peavey alone, which banks 0/1 deliberately omit)
+
+Per patch: two Program Changes, no Control Changes. One PC (MIDI ch. 2) to
+Switch-Track for Peavey's audio presence. The other (MIDI ch. 1) recalls one
+of five presets saved directly on Control Switcher itself -- Clean and Dirty,
+each with EQ on or off (four combinations), plus Muted -- each preset
+bundling Control Switcher's full set of four relays (Channel, EQ, Solo1,
+Solo2) into one recall instead of driving them with individual CCs. That's a
+deliberate trade: Control Switcher's manual documents this PC-recall mode as
+an alternative to CC control, and using it here means every patch needs
+exactly one PC to fully set Mesa's state, leaving both of the FCB1010's CC
+slots completely unused. The presets themselves have to be programmed onto
+Control Switcher's front panel (hold button 1 + button 4 while its switches
+are in the target combination) before any of this does anything -- see the
+PC-number mapping in `data/fcb1010-patch-data.json`'s `meta.mesa_presets_pc`.
 
 ## How this got built
 
@@ -143,7 +168,7 @@ next person (including future-me) reading the code cold.
 
 ## Adapting this to a different rig
 
-The reusable part isn't the Mesa/Marshall/Bandit data, it's the shape:
+The reusable part isn't the Mesa/Peavey data, it's the shape:
 patch data as JSON, a compiler that maps it onto the FCB1010's fixed
 per-preset slots, with the actual CC/PC semantics for your specific
 downstream gear established by testing, not assumed from a manual. To do

@@ -1,21 +1,67 @@
 # FCB1010 Bank / Switch Matrix
 
-Generated from `fcb1010-patch-data.json` - the full 70-patch layout,
-one footswitch (1-10) per column, one bank (0-6) per row group.
-Regenerate after any change to the JSON rather than hand-editing this file.
+Generated from `fcb1010-patch-data.json`. Mesa Mark V:35 + Peavey Bandit
+112 only (Marshall out as of 2026-09-14). Peavey on FCB1010 built-in
+relay SWITCH1 (consolidated from SWITCH2). Banks 0/1 mix single-amp and
+stereo-combo tones per song-section energy (clean vs dirty) rather than
+segregating by category. Regenerate after any change to the JSON rather
+than hand-editing this file.
 
-| Sw | Bank 0: Isolated Tone-Building | Bank 1: Mesa Clean | Bank 2: Mesa Dirty | Bank 3: Marshall Clean | Bank 4: Marshall Dirty | Bank 5: Bandit Clean | Bank 6: Bandit Dirty |
-|----|---|---|---|---|---|---|---|
-| 1 | Mesa clean (alone) | Mesa clean (alone) | Mesa dirty (alone) | Marshall clean (alone) | Marshall dirty (alone) | Bandit clean (alone) | Bandit dirty (alone) |
-| 2 | Mesa dirty (alone) | Mesa clean + Marshall clean | Mesa dirty + Marshall clean | Marshall clean + Mesa clean | Marshall dirty + Mesa clean | Bandit clean + Mesa clean | Bandit dirty + Mesa clean |
-| 3 | Marshall clean (alone) | Mesa clean + Bandit clean | Mesa dirty + Bandit clean | Marshall clean + Bandit clean | Marshall dirty + Bandit clean | Bandit clean + Marshall clean | Bandit dirty + Marshall clean |
-| 4 | Marshall dirty (alone) | Mesa clean + Marshall clean + Bandit clean | Mesa dirty + Marshall clean + Bandit clean | Marshall clean + Mesa clean + Bandit clean | Marshall dirty + Mesa clean + Bandit clean | Bandit clean + Mesa clean + Marshall clean | Bandit dirty + Mesa clean + Marshall clean |
-| 5 | Bandit clean (alone) | Mesa clean + Marshall dirty | Mesa dirty + Marshall dirty | Marshall clean + Mesa dirty | Marshall dirty + Mesa dirty | Bandit clean + Mesa dirty | Bandit dirty + Mesa dirty |
-| 6 | Bandit dirty (alone) | Mesa clean + Marshall clean + Bandit dirty | Mesa dirty + Marshall clean + Bandit dirty | Marshall clean + Mesa clean + Bandit dirty | Marshall dirty + Mesa clean + Bandit dirty | Bandit clean + Mesa clean + Marshall dirty | Bandit dirty + Mesa clean + Marshall dirty |
-| 7 | All mute (silence, amps set clean for lower standing noise) | Mesa clean + Bandit dirty | Mesa dirty + Bandit dirty | Marshall clean + Bandit dirty | Marshall dirty + Bandit dirty | Bandit clean + Marshall dirty | Bandit dirty + Marshall dirty |
-| 8 | All mute (silence, amps set clean for lower standing noise) | Mesa clean + Marshall dirty + Bandit clean | Mesa dirty + Marshall dirty + Bandit clean | Marshall clean + Mesa dirty + Bandit clean | Marshall dirty + Mesa dirty + Bandit clean | Bandit clean + Mesa dirty + Marshall clean | Bandit dirty + Mesa dirty + Marshall clean |
-| 9 | All mute (silence, amps set clean for lower standing noise) | Mesa clean + Marshall dirty + Bandit dirty | Mesa dirty + Marshall dirty + Bandit dirty | Marshall clean + Mesa dirty + Bandit dirty | Marshall dirty + Mesa dirty + Bandit dirty | Bandit clean + Mesa dirty + Marshall dirty | Bandit dirty + Mesa dirty + Marshall dirty |
-| 10 | All mute (silence, amps set clean for lower standing noise) | All mute (silence, amps set clean for lower standing noise) | All mute (silence, amps set clean for lower standing noise) | All mute (silence, amps set clean for lower standing noise) | All mute (silence, amps set clean for lower standing noise) | All mute (silence, amps set clean for lower standing noise) | All mute (silence, amps set clean for lower standing noise) |
+## Bank 0 - Clean-oriented section
 
-All 70 switch positions across banks 0-6 are populated; nothing is left empty.
-Banks 7-9 are open, reserved for a future performance/favorites bank.
+| Sw | Function | Mesa preset | Peavey | Switch-Track PC |
+|----|----------|-------------|--------|------------------|
+| 1 | Mesa Clean EQ-on (alone) | clean_eq_on | - | PC7 |
+| 2 | Mesa Clean EQ-off (alone) | clean_eq_off | - | PC7 |
+| 3 | Mesa Clean EQ-on + Peavey Clean | clean_eq_on | clean | PC3 |
+| 4 | Mesa Clean EQ-off + Peavey Clean | clean_eq_off | clean | PC3 |
+| 5 | Mesa Clean EQ-on + Peavey Dirty | clean_eq_on | dirty | PC3 |
+| 6 | Mesa Clean EQ-off + Peavey Dirty | clean_eq_off | dirty | PC3 |
+| 7 | All Mute (silence) | muted | - | PC7 |
+| 8 | All Mute (silence) | muted | - | PC7 |
+| 9 | All Mute (silence) | muted | - | PC7 |
+| 10 | All Mute (silence) | muted | - | PC7 |
+
+## Bank 1 - Dirty-oriented section
+
+| Sw | Function | Mesa preset | Peavey | Switch-Track PC |
+|----|----------|-------------|--------|------------------|
+| 1 | Mesa Dirty EQ-on (alone) | dirty_eq_on | - | PC7 |
+| 2 | Mesa Dirty EQ-off (alone) | dirty_eq_off | - | PC7 |
+| 3 | Mesa Dirty EQ-on + Peavey Clean | dirty_eq_on | clean | PC3 |
+| 4 | Mesa Dirty EQ-off + Peavey Clean | dirty_eq_off | clean | PC3 |
+| 5 | Mesa Dirty EQ-on + Peavey Dirty | dirty_eq_on | dirty | PC3 |
+| 6 | Mesa Dirty EQ-off + Peavey Dirty | dirty_eq_off | dirty | PC3 |
+| 7 | All Mute (silence) | muted | - | PC7 |
+| 8 | All Mute (silence) | muted | - | PC7 |
+| 9 | All Mute (silence) | muted | - | PC7 |
+| 10 | All Mute (silence) | muted | - | PC7 |
+
+## Bank 3 - Single-amp reference (Mesa + Peavey)
+
+| Sw | Function |
+|----|----------|
+| 1 | Mesa Clean, EQ on |
+| 2 | Mesa Clean, EQ off |
+| 3 | Mesa Dirty, EQ on |
+| 4 | Mesa Dirty, EQ off |
+| 5 | Peavey Clean |
+| 6 | Peavey Dirty |
+| 7 | All Mute (silence) |
+| 8 | All Mute (silence) |
+| 9 | All Mute (silence) |
+| 10 | All Mute (silence) |
+
+## Mesa preset PC numbers
+
+Programmed directly onto Control Switcher (hold button 1 + button 4 while
+its switches are in the target combination), confirmed working 2026-09-14:
+
+- **PC1 = clean_eq_on**: Channel=Clean, Solo1=off, EQ=on
+- **PC2 = clean_eq_off**: Channel=Clean, Solo1=off, EQ=off (featured/solo clean tone)
+- **PC3 = dirty_eq_on**: Channel=Dirty, Solo1=off, EQ=on
+- **PC4 = dirty_eq_off**: Channel=Dirty, Solo1=off, EQ=off
+- **PC5 = muted**: Channel=Clean, Solo1=on (mute), EQ=on
+
+Banks 2 and 4-8 open. See `data/fcb1010-patch-data.json` meta for full
+notes (rig history, Switch-Track wiring, Peavey relay consolidation).

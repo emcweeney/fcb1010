@@ -1,1561 +1,390 @@
 {
   "meta": {
     "device": "Behringer FCB1010, stock firmware",
-    "voodoo_lab_relay_map": {
-      "relay1_cc80": "Mesa Channel (0=Clean, 127=Dirty)",
-      "relay2_cc81": "Mesa EQ (unused per-patch, set manually on amp)",
-      "relay3_cc82": "Mesa Solo1 mute (0=off, 127=on) - CONFIRMED against real hardware 2026-09-10",
-      "relay4_cc83": "Mesa Solo2 mute (0=off, 127=on) -- unused in current patch set"
+    "rig_note": "Marshall DSL201 removed 2026-09-14 (amp down, unknown how long/if it returns). Rig is Mesa Mark V:35 + Peavey Bandit 112 only. Prior 3-amp data (Marshall included) is recoverable from git history if Marshall comes back.",
+    "mesa_control": "Voodoo Lab Control Switcher, set to PC mode (not CC). Each mesa_preset name below must be manually programmed onto Control Switcher itself (hold button 1 + button 4 while the switches are in the target combination) under the PC number listed in mesa_presets_pc, before sending this bank plan does anything useful.",
+    "mesa_presets_pc": {
+      "clean_eq_on": 1,
+      "clean_eq_off": 2,
+      "dirty_eq_on": 3,
+      "dirty_eq_off": 4,
+      "muted": 5
     },
-    "voodoo_lab_midi_channel": 1,
+    "mesa_preset_definitions": {
+      "clean_eq_on": "Channel=Clean, Solo1=off, EQ=on",
+      "dirty_eq_on": "Channel=Dirty, Solo1=off, EQ=on",
+      "clean_eq_off": "Channel=Clean, Solo1=off, EQ=off (featured/solo clean tone)",
+      "dirty_eq_off": "Channel=Dirty, Solo1=off, EQ=off",
+      "muted": "Channel=Clean, Solo1=on (mute), EQ=on"
+    },
+    "mesa_control_switcher_midi_channel": 1,
     "switchtrack_midi_channel": 2,
-    "switchtrack_pc_meanings": {
-      "1": "A (Marshall only)",
-      "3": "B (Bandit only)",
-      "5": "A+B (both)",
-      "7": "Mute (neither)"
+    "switchtrack_pc_meanings_in_use": {
+      "3": "Peavey audible (Switch-Track OUTB)",
+      "7": "Mute (Peavey silent)"
     },
-    "marshall_bandit_switching": "FCB1010 built-in relays (SWITCH1=Marshall, SWITCH2=Bandit), NOT MIDI messages",
-    "banks_planned": "0-6 (0=isolated tone-building alone patches, 1-6=combo banks); 7-9 open, reserved for performance/favorites"
+    "switchtrack_note": "Marshall's old OUTA leg is now unplugged/unused. Only PC3 and PC7 are meaningful with a single remaining Switch-Track amp.",
+    "peavey_switching": "FCB1010 built-in relay SWITCH1 (fcb_switch1_relay: on=dirty, off=clean). Moved here from SWITCH2 on 2026-09-14, consolidating onto SWITCH1 since Marshall (SWITCH1's original amp) is out and not expected back. Polarity carried over from the SWITCH2 confirmation (2026-09-11) on the assumption that it's a property of Peavey's own footswitch jack, not of which FCB1010 relay drives it - NOT independently re-verified on SWITCH1 yet.",
+    "mesa_modes_note": "Bank 0 = Clean-oriented section bank: Mesa Clean alone (both EQ states) + Mesa Clean x Peavey combos (both EQ states x both Peavey states), no Peavey-alone. Bank 1 = Dirty-oriented section bank, same shape with Mesa Dirty. Mixes single-amp and stereo-combo tones per bank for dynamics within a song section, rather than segregating by category. Bank 9 = single-amp reference for both amps (still has Peavey Clean/Dirty alone, if still wanted)."
   },
   "patches": [
     {
       "bank": 0,
       "switch": 1,
-      "function": "Mesa clean (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "function": "Mesa Clean EQ-on (alone)",
+      "mesa_preset": "clean_eq_on",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 0,
       "switch": 2,
-      "function": "Mesa dirty (alone)",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "function": "Mesa Clean EQ-off (alone)",
+      "mesa_preset": "clean_eq_off",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 0,
       "switch": 3,
-      "function": "Marshall clean (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
+      "function": "Mesa Clean EQ-on + Peavey Clean",
+      "mesa_preset": "clean_eq_on",
+      "peavey": {
         "present": true,
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
+      "switchtrack_pc_channel2": 3
     },
     {
       "bank": 0,
       "switch": 4,
-      "function": "Marshall dirty (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
+      "function": "Mesa Clean EQ-off + Peavey Clean",
+      "mesa_preset": "clean_eq_off",
+      "peavey": {
         "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": false,
         "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "fcb_switch1_relay": "off"
       },
-      "switchtrack_pc_channel2": 1
+      "switchtrack_pc_channel2": 3
     },
     {
       "bank": 0,
       "switch": 5,
-      "function": "Bandit clean (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Mesa Clean EQ-on + Peavey Dirty",
+      "mesa_preset": "clean_eq_on",
+      "peavey": {
         "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": "dirty",
+        "fcb_switch1_relay": "on"
       },
       "switchtrack_pc_channel2": 3
     },
     {
       "bank": 0,
       "switch": 6,
-      "function": "Bandit dirty (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Mesa Clean EQ-off + Peavey Dirty",
+      "mesa_preset": "clean_eq_off",
+      "peavey": {
         "present": true,
         "channel": "dirty",
-        "fcb_switch2_relay": "on"
+        "fcb_switch1_relay": "on"
       },
       "switchtrack_pc_channel2": 3
+    },
+    {
+      "bank": 0,
+      "switch": 7,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 8,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 9,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 0,
+      "switch": 10,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
     },
     {
       "bank": 1,
       "switch": 1,
-      "function": "Mesa clean (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "function": "Mesa Dirty EQ-on (alone)",
+      "mesa_preset": "dirty_eq_on",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 1,
       "switch": 2,
-      "function": "Mesa clean + Marshall clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Mesa Dirty EQ-off (alone)",
+      "mesa_preset": "dirty_eq_off",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 1,
-      "switch": 3,
-      "function": "Mesa clean + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 1,
-      "switch": 4,
-      "function": "Mesa clean + Marshall clean + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 1,
-      "switch": 5,
-      "function": "Mesa clean + Marshall dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 1,
-      "switch": 6,
-      "function": "Mesa clean + Marshall clean + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 1,
-      "switch": 7,
-      "function": "Mesa clean + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 1,
-      "switch": 8,
-      "function": "Mesa clean + Marshall dirty + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 1,
-      "switch": 9,
-      "function": "Mesa clean + Marshall dirty + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 2,
-      "switch": 1,
-      "function": "Mesa dirty (alone)",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
-      "bank": 2,
-      "switch": 2,
-      "function": "Mesa dirty + Marshall clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 2,
+      "bank": 1,
       "switch": 3,
-      "function": "Mesa dirty + Bandit clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Mesa Dirty EQ-on + Peavey Clean",
+      "mesa_preset": "dirty_eq_on",
+      "peavey": {
         "present": true,
         "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "fcb_switch1_relay": "off"
       },
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 2,
+      "bank": 1,
       "switch": 4,
-      "function": "Mesa dirty + Marshall clean + Bandit clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "function": "Mesa Dirty EQ-off + Peavey Clean",
+      "mesa_preset": "dirty_eq_off",
+      "peavey": {
         "present": true,
         "channel": "clean",
         "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 2,
-      "switch": 5,
-      "function": "Mesa dirty + Marshall dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 2,
-      "switch": 6,
-      "function": "Mesa dirty + Marshall clean + Bandit dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 2,
-      "switch": 7,
-      "function": "Mesa dirty + Bandit dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
       },
       "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 2,
-      "switch": 8,
-      "function": "Mesa dirty + Marshall dirty + Bandit clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "bank": 1,
+      "switch": 5,
+      "function": "Mesa Dirty EQ-on + Peavey Dirty",
+      "mesa_preset": "dirty_eq_on",
+      "peavey": {
         "present": true,
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
+      "switchtrack_pc_channel2": 3
     },
     {
-      "bank": 2,
-      "switch": 9,
-      "function": "Mesa dirty + Marshall dirty + Bandit dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "bank": 1,
+      "switch": 6,
+      "function": "Mesa Dirty EQ-off + Peavey Dirty",
+      "mesa_preset": "dirty_eq_off",
+      "peavey": {
         "present": true,
         "channel": "dirty",
         "fcb_switch1_relay": "on"
       },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
+      "switchtrack_pc_channel2": 3
+    },
+    {
+      "bank": 1,
+      "switch": 7,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
       },
-      "switchtrack_pc_channel2": 5
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 1,
+      "switch": 8,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 1,
+      "switch": 9,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
+    },
+    {
+      "bank": 1,
+      "switch": 10,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
+      },
+      "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 1,
-      "function": "Marshall clean (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Mesa Clean, EQ on",
+      "mesa_preset": "clean_eq_on",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
-      "switchtrack_pc_channel2": 1
+      "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 2,
-      "function": "Marshall clean + Mesa clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Mesa Clean, EQ off",
+      "mesa_preset": "clean_eq_off",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
-      "switchtrack_pc_channel2": 1
+      "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 3,
-      "function": "Marshall clean + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
+      "function": "Mesa Dirty, EQ on",
+      "mesa_preset": "dirty_eq_on",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
       },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
+      "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 4,
-      "function": "Marshall clean + Mesa clean + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
+      "function": "Mesa Dirty, EQ off",
+      "mesa_preset": "dirty_eq_off",
+      "peavey": {
+        "present": false,
+        "channel": null,
+        "fcb_switch1_relay": null
       },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
+      "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 5,
-      "function": "Marshall clean + Mesa dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
+      "function": "Peavey Clean",
+      "mesa_preset": "muted",
+      "peavey": {
         "present": true,
         "channel": "clean",
         "fcb_switch1_relay": "off"
       },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
+      "switchtrack_pc_channel2": 3
     },
     {
       "bank": 3,
       "switch": 6,
-      "function": "Marshall clean + Mesa clean + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
+      "function": "Peavey Dirty",
+      "mesa_preset": "muted",
+      "peavey": {
         "present": true,
         "channel": "dirty",
-        "fcb_switch2_relay": "on"
+        "fcb_switch1_relay": "on"
       },
-      "switchtrack_pc_channel2": 5
+      "switchtrack_pc_channel2": 3
     },
     {
       "bank": 3,
       "switch": 7,
-      "function": "Marshall clean + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 3,
-      "switch": 8,
-      "function": "Marshall clean + Mesa dirty + Bandit clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 3,
-      "switch": 9,
-      "function": "Marshall clean + Mesa dirty + Bandit dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 4,
-      "switch": 1,
-      "function": "Marshall dirty (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 4,
-      "switch": 2,
-      "function": "Marshall dirty + Mesa clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 4,
-      "switch": 3,
-      "function": "Marshall dirty + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 4,
-      "switch": 4,
-      "function": "Marshall dirty + Mesa clean + Bandit clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 4,
-      "switch": 5,
-      "function": "Marshall dirty + Mesa dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 1
-    },
-    {
-      "bank": 4,
-      "switch": 6,
-      "function": "Marshall dirty + Mesa clean + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 4,
-      "switch": 7,
-      "function": "Marshall dirty + Bandit dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 4,
-      "switch": 8,
-      "function": "Marshall dirty + Mesa dirty + Bandit clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 4,
-      "switch": 9,
-      "function": "Marshall dirty + Mesa dirty + Bandit dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 5,
-      "switch": 1,
-      "function": "Bandit clean (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 5,
-      "switch": 2,
-      "function": "Bandit clean + Mesa clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 5,
-      "switch": 3,
-      "function": "Bandit clean + Marshall clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 5,
-      "switch": 4,
-      "function": "Bandit clean + Mesa clean + Marshall clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 5,
-      "switch": 5,
-      "function": "Bandit clean + Mesa dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 5,
-      "switch": 6,
-      "function": "Bandit clean + Mesa clean + Marshall dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 5,
-      "switch": 7,
-      "function": "Bandit clean + Marshall dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 5,
-      "switch": 8,
-      "function": "Bandit clean + Mesa dirty + Marshall clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 5,
-      "switch": 9,
-      "function": "Bandit clean + Mesa dirty + Marshall dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 6,
-      "switch": 1,
-      "function": "Bandit dirty (alone)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 6,
-      "switch": 2,
-      "function": "Bandit dirty + Mesa clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 6,
-      "switch": 3,
-      "function": "Bandit dirty + Marshall clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 6,
-      "switch": 4,
-      "function": "Bandit dirty + Mesa clean + Marshall clean",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 6,
-      "switch": 5,
-      "function": "Bandit dirty + Mesa dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 3
-    },
-    {
-      "bank": 6,
-      "switch": 6,
-      "function": "Bandit dirty + Mesa clean + Marshall dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": false,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 6,
-      "switch": 7,
-      "function": "Bandit dirty + Marshall dirty",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 6,
-      "switch": 8,
-      "function": "Bandit dirty + Mesa dirty + Marshall clean",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 6,
-      "switch": 9,
-      "function": "Bandit dirty + Mesa dirty + Marshall dirty",
-      "mesa": {
-        "channel": "dirty",
-        "muted": false,
-        "cc80_channel_value": 127,
-        "cc82_solo1_mute_value": null
-      },
-      "marshall": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch1_relay": "on"
-      },
-      "bandit": {
-        "present": true,
-        "channel": "dirty",
-        "fcb_switch2_relay": "on"
-      },
-      "switchtrack_pc_channel2": 5
-    },
-    {
-      "bank": 0,
-      "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
-      "bank": 1,
-      "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
+      "bank": 3,
+      "switch": 8,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
-      "bank": 2,
-      "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
+      "bank": 3,
+      "switch": 9,
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     },
     {
       "bank": 3,
       "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
+      "function": "All Mute (silence)",
+      "mesa_preset": "muted",
+      "peavey": {
         "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 7
-    },
-    {
-      "bank": 4,
-      "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 7
-    },
-    {
-      "bank": 5,
-      "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 7
-    },
-    {
-      "bank": 6,
-      "switch": 10,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 7
-    },
-    {
-      "bank": 0,
-      "switch": 7,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 7
-    },
-    {
-      "bank": 0,
-      "switch": 8,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
-      },
-      "switchtrack_pc_channel2": 7
-    },
-    {
-      "bank": 0,
-      "switch": 9,
-      "function": "All mute (silence, amps set clean for lower standing noise)",
-      "mesa": {
-        "channel": "clean",
-        "muted": true,
-        "cc80_channel_value": 0,
-        "cc82_solo1_mute_value": 127
-      },
-      "marshall": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch1_relay": "off"
-      },
-      "bandit": {
-        "present": false,
-        "channel": "clean",
-        "fcb_switch2_relay": "off"
+        "channel": null,
+        "fcb_switch1_relay": null
       },
       "switchtrack_pc_channel2": 7
     }
