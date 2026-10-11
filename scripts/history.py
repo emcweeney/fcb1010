@@ -23,7 +23,7 @@ def list_events(entries):
             note = "  matches last send" if e["matches_last_send"] else "  DIFFERS from last send"
         dirty = "*" if e.get("git_dirty") else ""
         print(f"{i:3}  {e['ts']}  {e['action']:<4}  {e['sha256'][:8]}  "
-              f"{e.get('git_commit')}{dirty}  {e.get('source') or ''}{note}")
+              f"{e.get('git_commit')}{dirty}  {e.get('description') or e.get('source') or ''}{note}")
 
 
 def load_snapshot(entry):
