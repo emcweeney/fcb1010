@@ -111,8 +111,17 @@ pedal --(trigger dump on unit)--> dump_fcb1010.py --> FCB1010_backup.csv <-----+
 send or dump is unaffected. Running `bank_plan.py` alone is *not* logged: it
 only writes a CSV and never touches the pedal.
 
-A dump is the proof a plan landed: when a dump's hash equals the last send's,
-the log entry says `matches_last_send: true`.
+A dump is the proof a plan landed. The log doesn't fill up with repeats:
+- A dump identical to the latest entry adds no line; it stamps that entry
+  `confirmed_at` (once), so the send shows it was verified.
+- A send identical to the latest entry is skipped ("pedal already has this").
+- A dump that differs from the last send is logged with
+  `matches_last_send: false`.
+- Restoring an older config (different from the latest entry) is logged as a
+  new event, because the pedal's state really changed.
+- If the file you sent or saved has uncommitted changes, the script reminds you
+  to commit it. The commit message is that config's name and description; the
+  snapshot copy keeps it recoverable either way.
 
 ### What gets recorded
 
@@ -129,6 +138,7 @@ exact data to `dumps/history/<timestamp>_<action>.csv`. Fields:
 | `source`, `port` | file sent/saved, and MIDI port name |
 | `git_commit`, `git_dirty` | repo state when it happened |
 | `matches_last_send`, `last_send_ts` | dumps only: did the pedal hold what was last sent |
+| `confirmed_at` | a later dump matched this entry's hash |
 | `description` | imports: what the file is, plus the commit subject it came with |
 | `note` | imports: provenance caveat |
 
@@ -158,11 +168,11 @@ that plan reached the pedal. Only entries written by the scripts from now on
 
 ### Not built yet
 
-Agreed direction, not implemented: an optional name/description when sending,
-an auto-written summary of what changed from the previous entry, saving
-`fcb1010-patch-data.json` alongside each send so switches can be read as
-"Mesa dirty + Peavey clean" instead of raw numbers, `history.py show N`, and
-`history.py load N` (confirm, send, log as a new send).
+Agreed direction, not implemented: an auto-written summary of what changed
+from the previous entry, saving `fcb1010-patch-data.json` alongside each send
+so switches can be read as "Mesa dirty + Peavey clean" instead of raw numbers,
+`history.py show N`, and `history.py load N` (confirm, send, log as a new
+send). Names and descriptions come from git commit messages, not a prompt.
 
 ## The rig this was built for
 
