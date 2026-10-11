@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 from fcb1010 import fcb1010
+from fcb_log import log_event
 
 DUMPS_DIR = Path(__file__).resolve().parent.parent / "dumps"
 
@@ -54,6 +55,7 @@ def main():
 
     if fcb.save(out_file):
         print(f"Saved dump to {out_file}")
+        log_event("dump", fcb, source=out_file, port=midiin.get_ports()[port])
     else:
         sys.exit(1)
 

@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from fcb1010 import fcb1010
+from fcb_log import log_event
 
 DUMPS_DIR = Path(__file__).resolve().parent.parent / "dumps"
 
@@ -40,6 +41,7 @@ def main():
     midiout.send_message(fcb.get_raw_sysex())
     time.sleep(2)
     midiout.close_port()
+    log_event("send", fcb, source=in_file, port=midiout.get_ports()[port])
     print("Done. Step through a few presets on the unit to verify.")
 
 
