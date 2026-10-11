@@ -96,8 +96,8 @@ setting, not per-preset.
 The pedal's state matters and nothing on the pedal says when or why it
 changed. The history comes from two sources that `history.py` merges:
 
-- **git** holds the *content*: every committed version of
-  `dumps/FCB1010_bank_plan.csv` (generated plan) and `dumps/FCB1010_backup.csv`
+- **git** holds the *content*: every committed version of the CSVs in `dumps/`,
+  chiefly `FCB1010_bank_plan.csv` (generated plan) and `FCB1010_backup.csv`
   (read-back from the pedal), with the commit message as the description.
 - **the log**, `dumps/fcb1010.log.jsonl`, holds what git can't know: that a
   config was sent to the pedal, when, and that a later dump confirmed it.
@@ -126,8 +126,11 @@ python3 scripts/history.py 7      # diff entry 7 against the one before it
 python3 scripts/history.py 3 9    # diff entry 3 against entry 9
 ```
 
-Negative numbers count from the end. Each row is a committed plan or read-back
-(`plan`/`backup`) or a logged `send`/`dump`. A plan is flagged `sent` if the log
+Negative numbers count from the end. Each row is a committed version of a CSV
+in `dumps/` or a logged `send`/`dump`. The two files the scripts write are
+labelled `plan` and `backup`; any other CSV you keep in `dumps/` (e.g. the
+Bass Station II note banks) is labelled by its own name, so configs for any rig
+show up without code changes. A plan is flagged `sent` if the log
 has a send with the same hash, and `read back from pedal` if any read-back has
 the same hash (a read-back identical to a plan is the proof it landed).
 Diffs are per field with the CSV's 1-based Bank/Preset numbers, e.g.
@@ -177,10 +180,15 @@ the commit date and `plan`/`backup` in place of the action. The folder is
 tracked in git: it duplicates what git already holds, but keeps every config
 one file away from a restore.
 
-Before 2026-10-11 there was no log: older plans and read-backs appear in the
-timeline from git alone, with nothing recording that they were sent. The one
-proof is when a read-back matches a plan, as the Sep 11 read-back does for the
-Sep 10 plan.
+The log began on 2026-10-11. Before that, nothing recorded what was sent, so
+entries were backfilled. Every committed version of `FCB1010_backup.csv` counts
+as a dump (the user's rule), giving four dumps. Two sends were added from
+evidence: the Sep 10 plan and the Oct 5 plan, each of which a later read-back
+matches exactly. All carry `backfilled` and `approx` (and `by_user` for the
+rule-based dumps), and their times are the commit or file-write times, not the
+real ones. Other plans with no matching read-back appear in the timeline from
+git alone, with nothing recording that they were sent. Add an entry by hand only
+if you know it happened.
 
 ### Not built yet
 
