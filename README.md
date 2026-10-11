@@ -183,8 +183,9 @@ one file away from a restore.
 The log began on 2026-10-11. Before that, nothing recorded what was sent, so
 entries were backfilled. Every committed version of `FCB1010_backup.csv` counts
 as a dump (the user's rule), giving four dumps. Two sends were added from
-evidence: the Sep 10 plan and the Oct 5 plan, each of which a later read-back
-matches exactly. All carry `backfilled` and `approx` (and `by_user` for the
+evidence (the Sep 10 plan and the Oct 5 plan, each matched exactly by a later
+read-back) and two on the user's word (the Bass Station II note banks,
+`bank1_octave` and `multibank`, dated from their file times). All carry `backfilled` and `approx` (and `by_user` for the
 rule-based dumps), and their times are the commit or file-write times, not the
 real ones. Other plans with no matching read-back appear in the timeline from
 git alone, with nothing recording that they were sent. Add an entry by hand only
