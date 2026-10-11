@@ -25,24 +25,29 @@ def choose_port(midiout):
     return int(input("Select output port number: "))
 
 
+def send_config(fcb, source):
+    """Send an fcb1010 object to the pedal and log it. source labels where the config came from."""
+    import rtmidi
+    midiout = rtmidi.MidiOut()
+    port = choose_port(midiout)
+    port_name = midiout.get_ports()[port]
+    midiout.open_port(port)
+
+    print(f"Sending {source} to FCB1010...")
+    midiout.send_message(fcb.get_raw_sysex())
+    time.sleep(2)
+    midiout.close_port()
+    log_event("send", fcb, source=source, port=port_name)
+    print("Done. Step through a few presets on the unit to verify.")
+
+
 def main():
     in_file = sys.argv[1] if len(sys.argv) > 1 else str(DUMPS_DIR / "FCB1010_bank_plan.csv")
 
     fcb = fcb1010()
     if not fcb.load(in_file):
         sys.exit(1)
-
-    import rtmidi
-    midiout = rtmidi.MidiOut()
-    port = choose_port(midiout)
-    midiout.open_port(port)
-
-    print(f"Sending {in_file} to FCB1010...")
-    midiout.send_message(fcb.get_raw_sysex())
-    time.sleep(2)
-    midiout.close_port()
-    log_event("send", fcb, source=in_file, port=midiout.get_ports()[port])
-    print("Done. Step through a few presets on the unit to verify.")
+    send_config(fcb, in_file)
 
 
 if __name__ == "__main__":

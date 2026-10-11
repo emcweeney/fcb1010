@@ -8,6 +8,7 @@
 #     python3 history.py          List the timeline
 #     python3 history.py N        Diff entry N against the one before it
 #     python3 history.py A B      Diff entry A against entry B
+#     python3 history.py load N   Send entry N to the pedal (shows the diff, asks first)
 #   Negative indexes count from the end. Bank/Preset numbers match the CSV (1-based).
 
 import subprocess
@@ -147,8 +148,58 @@ def diff(a, b):
     return changes
 
 
+def pedal_state_row(rows):
+    """The latest row that says what the pedal held: a send, a dump, or a committed read-back."""
+    return next((r for r in reversed(rows) if r["kind"] in ("send", "dump", "backup")), None)
+
+
+def load_entry(rows, index, confirm=input, sender=None):
+    """Show what sending rows[index] would change, ask, then send and log it."""
+    row = rows[index]
+    fcb = load_row(row)
+    if not fcb:
+        sys.exit("Could not load that entry's content (its backup file is missing).")
+    print(f"Entry {index}: {row['ts'][:16]}  {row['kind']}  {row['hash'][:8]}  {row['subject']}")
+
+    state = pedal_state_row(rows)
+    current = load_row(state) if state else None
+    if current:
+        changes = diff(current, fcb)
+        print(f"Pedal's last known state: entry {rows.index(state)} ({state['kind']} {state['hash'][:8]})")
+        banks = sorted({int(c.split()[1]) for c in changes if c.startswith("Bank")})
+        glob = sum(c.startswith("Global") for c in changes)
+        if changes:
+            print(f"Sending this would change {len(changes)} fields in banks {banks}"
+                  + (f" and {glob} global settings" if glob else "") + ":")
+        else:
+            print("Identical to the pedal's last known state.")
+        print("\n".join(changes[:40]))
+        if len(changes) > 40:
+            print(f"... and {len(changes) - 40} more (python3 history.py {rows.index(state)} {index} for all)")
+    else:
+        print("No known pedal state to compare against; this overwrites everything.")
+
+    if confirm("Send this config to the pedal? [y/N] ").strip().lower() != "y":
+        print("Not sent.")
+        return False
+    if row.get("git"):
+        source = f"git {row['git'][0][:7]}:{row['git'][1]}"
+    else:
+        source = row["log"]["backup"]
+    if sender is None:
+        from send_fcb1010 import send_config as sender
+    sender(fcb, source)
+    return True
+
+
 def main():
     rows = timeline()
+    if len(sys.argv) == 3 and sys.argv[1] == "load":
+        try:
+            load_entry(rows, int(sys.argv[2]) % len(rows))
+        except ZeroDivisionError:
+            sys.exit("Nothing in the timeline yet.")
+        return
     args = [int(a) for a in sys.argv[1:]]
     if not args:
         list_rows(rows)

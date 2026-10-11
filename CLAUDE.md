@@ -22,6 +22,6 @@ backup CSV in `dumps/history/` (tracked in git) that can be sent back to the ped
 - Source of truth for the rig is `data/fcb1010-patch-data.json`; the CSVs in
   `dumps/` are generated or read back from the device.
 - Run scripts from the repo root. Send and dump need the pedal and a MIDI port,
-  so don't run them as tests.
+  so don't run them, or `history.py load N` (which sends to the pedal), as tests.
 - `origin` is the user's fork; `upstream` is riban-bw's repo. Only push when asked.
 - Commits are authored as the user with no Claude co-author trailer.

@@ -133,9 +133,18 @@ the same hash (a read-back identical to a plan is the proof it landed).
 Diffs are per field with the CSV's 1-based Bank/Preset numbers, e.g.
 `Bank 1 Preset 3: pc1_program 1 -> 9`, and print the full commit message.
 
-To put a past config back on the pedal, send its dated backup:
-`python3 scripts/send_fcb1010.py dumps/history/<file>.csv`. That send is logged
-as a new entry whose hash matches the old one.
+To put a past config back on the pedal:
+
+```
+python3 scripts/history.py load 9
+```
+
+It shows what entry 9 would change compared with the pedal's last known state
+(the latest send, dump or committed read-back), asks `[y/N]`, then sends it. The
+send is logged as a new entry whose hash matches the old one. "Last known" means
+what the log and git say, not a live read of the pedal; take a fresh dump first
+if the pedal may have been edited by hand. You can also send any dated backup
+directly: `python3 scripts/send_fcb1010.py dumps/history/<file>.csv`.
 
 ### What the log records
 
@@ -176,8 +185,8 @@ Sep 10 plan.
 ### Not built yet
 
 Saving `fcb1010-patch-data.json` alongside each send so switches can be read as
-"Mesa dirty + Peavey clean" instead of raw numbers, `history.py show N`, and
-`history.py load N` (confirm, send, log as a new send).
+"Mesa dirty + Peavey clean" instead of raw numbers, and `history.py show N` to
+print an entry's switch layout in those words.
 
 ## The rig this was built for
 
