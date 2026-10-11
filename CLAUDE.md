@@ -7,13 +7,13 @@ which is sent to the pedal as SysEx. Full docs are in `README.md`.
 
 For any question about what was sent to the pedal, what it currently holds, or
 how a past config differed, run `python3 scripts/history.py` first (add `N` or
-`A B` to diff), then read the "Config history" section of `README.md`. It
-explains the log fields and the rules that are easy to get wrong: `import`
-entries are not proof of a send, identical repeats are deliberately not logged,
-and `bank_plan.py` alone never touches the pedal.
-
-Config names and descriptions come from git commit messages, so the commit that
-adds a plan or read-back CSV is where to look for why it changed.
+`A B` to diff), then read the "Config history" section of `README.md`. History
+is git (committed plan/read-back CSVs; the commit message is the description)
+merged with the log of sends and dumps. Rules that are easy to get wrong:
+git alone does not show that a plan was sent (only the log, or a read-back that
+matches the plan, does), the same hash means an identical pedal state, and
+`bank_plan.py` alone never touches the pedal. Each send/dump also leaves a dated
+backup CSV in `dumps/history/` (tracked in git) that can be sent back to the pedal.
 
 ## Working in this repo
 

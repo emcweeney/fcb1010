@@ -39,16 +39,16 @@ scripts/
   send_test_cc.py  fire one raw Control Change (channel, controller, value)
   send_test_pc.py  fire one raw Program Change (channel, program)
   bank_plan.py     compile data/fcb1010-patch-data.json -> CSV (rig-specific)
-  fcb_log.py       log_event(): record every send/dump + save a snapshot (used by send/dump)
-  history.py       list logged events, diff any two
+  fcb_log.py       log_event(): log each send/dump + save a dated backup (used by send/dump)
+  history.py       timeline of git versions + logged events, diff any two
 data/
   fcb1010-patch-data.json   the patch dataset bank_plan.py compiles
   fcb1010-bank-plan.md      narrative spec: signal chain, CC assignments, per-bank tables
   fcb1010-bank-matrix.md    generated bank x switch reference table
 dumps/
   CSV exports/backups, including some pre-dating this rig (Bass Station II note banks)
-  fcb1010.log.jsonl         one JSON line per send/dump/import (see "Config history")
-  history/                  a dated snapshot CSV for every logged event
+  fcb1010.log.jsonl         one JSON line per send/dump (see "Config history")
+  history/                  dated backup of every send/dump (and extracted git versions)
 ```
 
 Run everything from repo root; the scripts resolve their own paths.
@@ -93,9 +93,14 @@ setting, not per-preset.
 
 ## Config history
 
-The device's state is the thing that matters and nothing on the pedal says
-when or why it changed, so every send and dump is recorded. The aim is a
-library of configs: any past state can be found, compared, and looked up.
+The pedal's state matters and nothing on the pedal says when or why it
+changed. The history comes from two sources that `history.py` merges:
+
+- **git** holds the *content*: every committed version of
+  `dumps/FCB1010_bank_plan.csv` (generated plan) and `dumps/FCB1010_backup.csv`
+  (read-back from the pedal), with the commit message as the description.
+- **the log**, `dumps/fcb1010.log.jsonl`, holds what git can't know: that a
+  config was sent to the pedal, when, and that a later dump confirmed it.
 
 ### The flow
 
@@ -106,73 +111,73 @@ pedal --(trigger dump on unit)--> dump_fcb1010.py --> FCB1010_backup.csv <-----+
          (read-back to confirm the plan landed)
 ```
 
-`send_fcb1010.py` and `dump_fcb1010.py` each call `log_event()` (in
-`fcb_log.py`) when they finish. If logging fails it prints a warning and the
-send or dump is unaffected. Running `bank_plan.py` alone is *not* logged: it
-only writes a CSV and never touches the pedal.
-
-A dump is the proof a plan landed. The log doesn't fill up with repeats:
-- A dump identical to the latest entry adds no line; it stamps that entry
-  `confirmed_at` (once), so the send shows it was verified.
-- A send identical to the latest entry is skipped ("pedal already has this").
-- A dump that differs from the last send is logged with
-  `matches_last_send: false`.
-- Restoring an older config (different from the latest entry) is logged as a
-  new event, because the pedal's state really changed.
-- If the file you sent or saved has uncommitted changes, the script reminds you
-  to commit it. The commit message is that config's name and description; the
-  snapshot copy keeps it recoverable either way.
-
-### What gets recorded
-
-Each event appends one line to `dumps/fcb1010.log.jsonl` (JSON Lines: one
-object per line, so an append can't corrupt earlier entries) and writes the
-exact data to `dumps/history/<timestamp>_<action>.csv`. Fields:
-
-| Field | Meaning |
-|---|---|
-| `ts` | ISO-8601 time with timezone |
-| `action` | `send`, `dump`, or `import` (see below) |
-| `sha256` | hash of the 2352 SysEx bytes; equal hash = identical pedal state |
-| `snapshot` | path of the saved CSV for this event |
-| `source`, `port` | file sent/saved, and MIDI port name |
-| `git_commit`, `git_dirty` | repo state when it happened |
-| `matches_last_send`, `last_send_ts` | dumps only: did the pedal hold what was last sent |
-| `confirmed_at` | a later dump matched this entry's hash |
-| `description` | imports: what the file is, plus the commit subject it came with |
-| `note` | imports: provenance caveat |
+Commit the plan and the read-back (with the log) after a session; the commit
+message is the config's name and description. `send_fcb1010.py` and
+`dump_fcb1010.py` each call `log_event()` (in `fcb_log.py`) when they finish.
+If logging fails it prints a warning and the send or dump is unaffected.
+Running `bank_plan.py` alone is *not* logged: it only writes a CSV and never
+touches the pedal.
 
 ### Looking at it
 
 ```
-python3 scripts/history.py        # list events
-python3 scripts/history.py 7      # diff event 7 against the one before it
-python3 scripts/history.py 3 9    # diff event 3 against event 9
+python3 scripts/history.py        # the timeline
+python3 scripts/history.py 7      # diff entry 7 against the one before it
+python3 scripts/history.py 3 9    # diff entry 3 against entry 9
 ```
 
-Negative numbers count from the end. Diffs are per field, using the CSV's
-1-based Bank/Preset numbers, e.g. `Bank 1 Preset 3: pc1_program 1 -> 9`.
-To put a past config back on the pedal today, send its snapshot:
-`python3 scripts/send_fcb1010.py dumps/history/<snapshot>.csv`.
+Negative numbers count from the end. Each row is a committed plan or read-back
+(`plan`/`backup`) or a logged `send`/`dump`. A plan is flagged `sent` if the log
+has a send with the same hash, and `read back from pedal` if any read-back has
+the same hash (a read-back identical to a plan is the proof it landed).
+Diffs are per field with the CSV's 1-based Bank/Preset numbers, e.g.
+`Bank 1 Preset 3: pc1_program 1 -> 9`, and print the full commit message.
 
-### Imported history
+To put a past config back on the pedal, send its dated backup:
+`python3 scripts/send_fcb1010.py dumps/history/<file>.csv`. That send is logged
+as a new entry whose hash matches the old one.
 
-The log was added on 2026-10-11, after most of the work was done. Older
-versions of the four CSVs were imported from git (one entry per distinct
-version, dated by commit time) so the library isn't empty. **These are
-`import` entries, not sends.** Git only shows that a CSV was committed, not
-that it was sent, so they are labelled unverified. The one proof available
-is that the Sep 11 read-back matches the Sep 10 plan exactly, which shows
-that plan reached the pedal. Only entries written by the scripts from now on
-(`send`/`dump`) are a true record.
+### What the log records
+
+One JSON line per send or dump (JSON Lines, so an append can't corrupt earlier
+lines). The log is only about pedal activity and doesn't mention git:
+
+| Field | Meaning |
+|---|---|
+| `ts` | ISO-8601 time with timezone |
+| `action` | `send` or `dump` |
+| `sha256` | hash of the 2352 SysEx bytes; equal hash = identical pedal state |
+| `source` | file sent or saved (repo-relative) |
+| `port` | MIDI port name |
+| `backup` | the dated backup of this exact config, under `dumps/history/` |
+
+It is append-only and complete: every send and every dump is a line, repeats
+included, and nothing is edited afterward. `history.py` marks an entry
+`same as #N` when its hash matches an earlier one (e.g. restoring an old
+config), a send `confirmed by a later dump` when a dump with the same hash
+follows it, and a dump `differs from last send` when it doesn't match.
+
+### Dated backups
+
+Each send or dump also writes a plain CSV to `dumps/history/`, named by date,
+action and the start of its hash, e.g. `2026-10-12_1832_send_1a189f09.csv`
+(`-2`, `-3`... if the same minute repeats). They are the same format
+`send_fcb1010.py` reads, so any of them can be sent back to the pedal. Versions
+that predate the log were extracted from git into the same folder, named with
+the commit date and `plan`/`backup` in place of the action. The folder is
+tracked in git: it duplicates what git already holds, but keeps every config
+one file away from a restore.
+
+Before 2026-10-11 there was no log: older plans and read-backs appear in the
+timeline from git alone, with nothing recording that they were sent. The one
+proof is when a read-back matches a plan, as the Sep 11 read-back does for the
+Sep 10 plan.
 
 ### Not built yet
 
-Agreed direction, not implemented: an auto-written summary of what changed
-from the previous entry, saving `fcb1010-patch-data.json` alongside each send
-so switches can be read as "Mesa dirty + Peavey clean" instead of raw numbers,
-`history.py show N`, and `history.py load N` (confirm, send, log as a new
-send). Names and descriptions come from git commit messages, not a prompt.
+Saving `fcb1010-patch-data.json` alongside each send so switches can be read as
+"Mesa dirty + Peavey clean" instead of raw numbers, `history.py show N`, and
+`history.py load N` (confirm, send, log as a new send).
 
 ## The rig this was built for
 
