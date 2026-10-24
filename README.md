@@ -43,8 +43,8 @@ scripts/
   history.py       timeline of git versions + logged events, diff any two
 data/
   fcb1010-patch-data.json   the patch dataset bank_plan.py compiles
-  fcb1010-bank-plan.md      narrative spec: signal chain, CC assignments, per-bank tables
-  fcb1010-bank-matrix.md    generated bank x switch reference table
+  fcb1010-bank-plan.md      narrative spec: wiring, routing, relay polarity
+  fcb1010-bank-matrix.md    bank x switch reference table (update by hand)
 dumps/
   CSV exports/backups, including some pre-dating this rig (Bass Station II note banks)
   fcb1010.log.jsonl         one JSON line per send/dump (see "Config history")
@@ -199,43 +199,35 @@ print an entry's switch layout in those words.
 
 ## The rig this was built for
 
-**As of 2026-09-14: Mesa Mark V:35 + Peavey Bandit 112 only.** A Marshall
-DSL201 was originally part of this rig (controlled via the FCB1010's own
-built-in SWITCH1 relay) but is currently disconnected -- amp trouble, unknown
-how long it's out or whether it comes back. The 3-amp version of everything
-below is fully recoverable from git history if it does.
+**As of 2026-10-24: Mesa Mark V:35 + Peavey Bandit 112.** A Marshall DSL201
+was part of the rig until 2026-09-14; the three-amp version of everything is
+in git history (commit 380ea49 has the full combo matrix).
 
-Two amps switched from one FCB1010: Mesa (MIDI, via a Voodoo Lab Control
-Switcher and a BTPA interface cable into Mesa's proprietary 5-pin DIN jack)
-and Peavey (via the FCB1010's own built-in SWITCH1 relay -- consolidated onto
-it from SWITCH2 once Marshall, SWITCH1's original amp, was disconnected), plus
-a Mesa Switch-Track deciding whether Peavey is actually routed audio.
-`data/fcb1010-patch-data.json` is the structured form `bank_plan.py`
-compiles -- 30 patches across three banks, banks 2 and 4-8 open. Banks 0/1 are
-organized by song-section energy rather than by category, mixing single-amp
-and stereo-combo (both amps at once, genuinely stereo since Mesa and Peavey
-sit on separate legs of the pedalboard's stereo split) tones together so
-either kind of dynamic is one switch away within a section:
+`data/fcb1010-patch-data.json` holds one bank (bank 0) of 10 patches, which
+`bank_plan.py` compiles. Each patch sets four things:
 
-- **Bank 0** -- Clean-oriented section: Mesa Clean alone (both EQ states),
-  plus Mesa Clean x Peavey combos (both EQ states x both Peavey states)
-- **Bank 1** -- Dirty-oriented section, same shape with Mesa Dirty
-- **Bank 3** -- single-amp reference for both amps: Mesa's four states, then
-  Peavey's two (including Peavey alone, which banks 0/1 deliberately omit)
+- **Switch-Track** (MIDI ch. 2, one PC) -- which amps get signal: OUTA =
+  Peavey, OUTB = Mesa, using factory presets 1 (A), 3 (B), 5 (A+B) and
+  7 (Mute). The PC follows from which amps are audible, and `bank_plan.py`
+  checks it.
+- **Mesa** (MIDI ch. 1, one PC) -- recalls one of five presets saved on a
+  Voodoo Lab Control Switcher (Clean/Dirty x EQ on/off, plus Muted), which
+  drives the Mesa's 5-pin DIN jack through a BTPA cable. Each preset bundles
+  all four Control Switcher relays (Channel, EQ, Solo1, Solo2) into one
+  recall, so no CCs are needed. The presets have to be programmed on the
+  Control Switcher's front panel first (hold button 1 + button 4) -- see
+  `meta.mesa_presets_pc`.
+- **Peavey channel** -- the FCB1010's built-in SWITCH1 relay.
+- **Peavey FX loop** -- the built-in SWITCH2 relay. The Bandit's TRS
+  footswitch jack (tip = loop, ring = channel) is split onto SWITCH1/SWITCH2
+  with a TRS-to-2xTS Y cable. The loop is on whenever the Peavey plays,
+  because a Daisy Seed effects unit sits in both amps' FX loops.
 
-Per patch: two Program Changes, no Control Changes. One PC (MIDI ch. 2) to
-Switch-Track for Peavey's audio presence. The other (MIDI ch. 1) recalls one
-of five presets saved directly on Control Switcher itself -- Clean and Dirty,
-each with EQ on or off (four combinations), plus Muted -- each preset
-bundling Control Switcher's full set of four relays (Channel, EQ, Solo1,
-Solo2) into one recall instead of driving them with individual CCs. That's a
-deliberate trade: Control Switcher's manual documents this PC-recall mode as
-an alternative to CC control, and using it here means every patch needs
-exactly one PC to fully set Mesa's state, leaving both of the FCB1010's CC
-slots completely unused. The presets themselves have to be programmed onto
-Control Switcher's front panel (hold button 1 + button 4 while its switches
-are in the target combination) before any of this does anything -- see the
-PC-number mapping in `data/fcb1010-patch-data.json`'s `meta.mesa_presets_pc`.
+Switches 1-4 are both amps (clean to dirty), 6-9 are one amp each, and 5 and
+10 mute everything. A muted Peavey is also put on its clean channel with the
+loop off; muted on the dirty channel it still isn't quiet. Full table:
+`data/fcb1010-bank-matrix.md`; wiring and reasoning:
+`data/fcb1010-bank-plan.md`.
 
 ## How this got built
 

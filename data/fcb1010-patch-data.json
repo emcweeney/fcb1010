@@ -20,12 +20,17 @@
     "mesa_control_switcher_midi_channel": 1,
     "switchtrack_midi_channel": 2,
     "switchtrack_pc_meanings_in_use": {
-      "1": "Peavey audible (Switch-Track OUTA - moved here 2026-09-14 from OUTB)",
-      "7": "Mute (Peavey silent)"
+      "1": "A only - Peavey audible, Mesa silent",
+      "3": "B only - Mesa audible, Peavey silent",
+      "5": "A+B - both amps audible",
+      "7": "Mute - neither amp"
     },
-    "switchtrack_note": "Peavey's audio cable moved from Switch-Track OUTB to OUTA (Marshall's old, now-unused audio leg) 2026-09-14, consolidating alongside the earlier SWITCH1 relay move. Only PC1 and PC7 are meaningful now with a single remaining Switch-Track amp.",
-    "peavey_switching": "FCB1010 built-in relay SWITCH1 (fcb_switch1_relay: on=dirty, off=clean). Moved here from SWITCH2 on 2026-09-14, consolidating onto SWITCH1 since Marshall (SWITCH1's original amp) is out and not expected back. Polarity carried over from the SWITCH2 confirmation (2026-09-11) on the assumption that it's a property of Peavey's own footswitch jack, not of which FCB1010 relay drives it - NOT independently re-verified on SWITCH1 yet.",
-    "mesa_modes_note": "2026-10-05: consolidated to a single bank (bank 0) - the old 3-bank layout (clean-section/dirty-section/single-amp-reference) is fully superseded, recoverable from git history if ever wanted back. Switches 1-4 are the stereo combos (both amps sounding at once - Mesa sits on the permanent left leg of the SCF Gold's stereo split, Peavey behind Switch-Track on the right leg), ordered dirty-to-clean (both dirty, mixed, mixed, both clean). Switch 5 is mute. Switches 6-9 are single-amp reference tones, also dirty-to-clean (Mesa Dirty, Peavey Dirty, Mesa Clean, Peavey Clean). Switch 10 is mute. All combos and all alone-Mesa tones here use EQ-on only - the EQ-off Mesa presets aren't used by any patch in this layout (see mesa_preset_definitions)."
+    "switchtrack_note": "2026-10-24: both amps are behind the Switch-Track - OUTA = Peavey, OUTB = Mesa (factory presets 1/3/5/7). Each patch's switchtrack_pc_channel2 follows from which amps are audible (peavey.present, mesa_preset != 'muted'); bank_plan.py checks this and refuses to build on a mismatch. Before 2026-10-24 only Peavey was on the Switch-Track (OUTA, PC1/PC7) and Mesa sat on the SCF Gold's left leg.",
+    "peavey_switching": "Peavey Bandit's TRS footswitch jack (TIP = FX loop, RING = channel) is split by a TRS-to-2xTS Y cable (replaced the old tip/ring-swapped cable 2026-10-24, which grounded the loop contact and held the loop off). RING -> FCB1010 SWITCH1 = channel, set per patch by fcb_switch1_relay (on=dirty, off=clean; confirmed on SWITCH1 2026-10-24). TIP -> SWITCH2 = FX loop: on when peavey.present is true, off when Peavey is muted.",
+    "peavey_fx_loop_switch2_relay": "on",
+    "peavey_fx_loop_note": "peavey_fx_loop_switch2_relay is the SWITCH2 relay state that turns the Peavey's FX loop ON ('on' = closed; confirmed 2026-10-24: with SWITCH2 open the loop was off). The loop is on in every patch where peavey.present is true, so the Daisy Seed (Peavey on its left in/out, Mesa on the right) isn't bypassed, and off where Peavey is muted.",
+    "peavey_mute_note": "Peavey muted (peavey.present false) = three things together: Switch-Track PC7, FX loop OFF (SWITCH2 open), and channel CLEAN (SWITCH1 open). Clean is required to make it quiet - Switch-Track mute plus loop off on the dirty channel is not silent. bank_plan.py forces clean on every muted patch regardless of fcb_switch1_relay. Noted 2026-10-24.",
+    "mesa_modes_note": "Single bank (bank 0) since 2026-10-05; the old 3-bank layout is in git history. Switches 1-4 are both amps (Switch-Track A+B), clean to dirty: Mesa clean/Peavey clean, Mesa clean/Peavey dirty, Mesa dirty/Peavey clean, Mesa dirty/Peavey dirty. Switches 6-9 are one amp each: Mesa clean, Peavey clean, Mesa dirty, Peavey dirty. Switches 5 and 10 are the only full mutes (Switch-Track PC7). Mesa uses EQ-on presets only; the EQ-off presets aren't used by any patch."
   },
   "banks": [
     {
@@ -40,7 +45,7 @@
             "channel": "clean",
             "fcb_switch1_relay": "off"
           },
-          "switchtrack_pc_channel2": 1
+          "switchtrack_pc_channel2": 5
         },
         {
           "switch": 2,
@@ -51,7 +56,7 @@
             "channel": "dirty",
             "fcb_switch1_relay": "on"
           },
-          "switchtrack_pc_channel2": 1
+          "switchtrack_pc_channel2": 5
         },
         {
           "switch": 3,
@@ -62,7 +67,7 @@
             "channel": "clean",
             "fcb_switch1_relay": "off"
           },
-          "switchtrack_pc_channel2": 1
+          "switchtrack_pc_channel2": 5
         },
         {
           "switch": 4,
@@ -73,7 +78,7 @@
             "channel": "dirty",
             "fcb_switch1_relay": "on"
           },
-          "switchtrack_pc_channel2": 1
+          "switchtrack_pc_channel2": 5
         },
         {
           "switch": 5,
@@ -95,7 +100,7 @@
             "channel": null,
             "fcb_switch1_relay": null
           },
-          "switchtrack_pc_channel2": 7
+          "switchtrack_pc_channel2": 3
         },
         {
           "switch": 7,
@@ -117,7 +122,7 @@
             "channel": null,
             "fcb_switch1_relay": null
           },
-          "switchtrack_pc_channel2": 7
+          "switchtrack_pc_channel2": 3
         },
         {
           "switch": 9,
