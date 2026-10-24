@@ -120,11 +120,13 @@ Control Switcher listens on ch1, Switch-Track on ch2.
 
 ### Audio
 ```
-Guitar -> pedalboard -> Switch-Track INPUT
+Guitar -> Switch-Track INPUT   (the only audio device on the pedalboard)
                           OUTA -> Peavey Bandit input
                           OUTB -> Mesa Mark V input
 Peavey FX loop <-> Daisy Seed left;  Mesa FX loop <-> Daisy Seed right
 ```
+Effects come from the Daisy Seed in the amps' FX loops, not from pedals in
+front of the amps. The earlier Carcosa -> Blood Moon -> SCF Gold chain is gone.
 
 ### Switching cables
 ```
