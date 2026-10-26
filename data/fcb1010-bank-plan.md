@@ -108,9 +108,10 @@ loop is on in every patch where the Peavey plays.
 
 The Daisy is on the end of the MIDI chain and answers program changes on
 **ch3 only**. Every FCB preset sends it one, from the FCB's PC3 slot
-(`daisy_pc` per patch, required). Program **126 is dry**: it's kept empty on
-the Daisy's SD card, and the Daisy also boots on it, so it's dry from
-power-up until a preset picks a patch. Program **127 mutes** the Daisy (a
+(`daisy_pc` per patch, required). Program **126 is dry**: reserved in the
+Daisy's firmware (a 126.json on its card is ignored), and the Daisy also
+boots on it, so it's dry from
+power-up until a preset picks a patch. Program **127 mutes** the Daisy, also reserved (a
 5 ms fade, and any echo or reverb trails are dropped); the two mute presets
 (5 and 10) send it, and only they may (`bank_plan.py` checks). That silences
 the Mesa's loop, which the FCB can't switch off, so its preamp hiss doesn't

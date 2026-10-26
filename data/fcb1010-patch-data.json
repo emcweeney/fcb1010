@@ -29,7 +29,7 @@
     "daisy_midi_channel": 3,
     "daisy_dry_pc": 126,
     "daisy_mute_pc": 127,
-    "daisy_note": "Daisy Seed (daisy-fx) answers program changes on MIDI ch3 only and boots on program 126, which is kept empty on its SD card so it means dry (passthrough). Program 127 mutes the Daisy (5 ms fade, echo and reverb trails dropped); the two mute presets send it, so the Mesa's loop, which the FCB can't switch off, is silent too. Every patch sets daisy_pc explicitly, so pressing a preset always sets the Daisy; a patch picked on the Daisy's own buttons lasts until the next FCB press. The Daisy's MIDI IN is at the end of the chain (after the Switch-Track). daisy_patches names the patches on its card.",
+    "daisy_note": "Daisy Seed (daisy-fx) answers program changes on MIDI ch3 only and boots on program 126, dry (passthrough). 126 and 127 are reserved in the Daisy's firmware, never files on its card; programs 0-125 are its patches. Program 127 mutes the Daisy (5 ms fade, echo and reverb trails dropped); the two mute presets send it, so the Mesa's loop, which the FCB can't switch off, is silent too. Every patch sets daisy_pc explicitly, so pressing a preset always sets the Daisy; a patch picked on the Daisy's own buttons lasts until the next FCB press. The Daisy's MIDI IN is at the end of the chain (after the Switch-Track). daisy_patches names the patches on its card.",
     "daisy_patches": {
       "0": "Stereo Phaser",
       "1": "Stereo Chorus",

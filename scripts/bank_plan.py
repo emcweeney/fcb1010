@@ -41,7 +41,7 @@ MESA_MIDI_CHANNEL = 0          # Voodoo Lab Control Switcher - MIDI Channel 1
 #   the channel number itself is unaffected by the later switch to PC mode).
 SWITCHTRACK_MIDI_CHANNEL = 1   # Switch-Track - MIDI Channel 2
 DAISY_MIDI_CHANNEL = 2         # Daisy Seed (daisy-fx) - MIDI Channel 3
-DAISY_DRY_PC = 126             # Daisy program kept empty on its card: dry (it boots there)
+DAISY_DRY_PC = 126             # Daisy's built-in dry program (it boots there)
 DAISY_MUTE_PC = 127            # Daisy program that mutes it
 #   CONFIRMED 2026-08-31 against real hardware: scripts/send_test_pc.py 2 3
 #   produced a real A-to-B transition (OUTB lit).
@@ -154,8 +154,8 @@ def apply_patch_data(fcb, mesa_presets_pc, fx_loop_relay_on, banks):
             preset.pc2_program = mesa_presets_pc[patch["mesa_preset"]]
 
             #   Daisy Seed patch - Program Change on MIDI channel 3, sent on every
-            #   patch so a preset always sets the Daisy exactly (126 = dry, kept
-            #   empty on the Daisy's card; 127 = mute). Required: no "leave the
+            #   patch so a preset always sets the Daisy exactly (126 = dry, 127 =
+            #   mute; both built into the Daisy's firmware). Required: no "leave the
             #   Daisy alone". The mute presets (Switch-Track mute) mute the Daisy
             #   too, and only they do.
             daisy_pc = patch.get("daisy_pc")
