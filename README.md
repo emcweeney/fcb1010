@@ -222,8 +222,9 @@ in git history (commit 380ea49 has the full combo matrix).
   footswitch jack (tip = loop, ring = channel) is split onto SWITCH1/SWITCH2
   with a TRS-to-2xTS Y cable. The loop is on whenever the Peavey plays,
   because a Daisy Seed effects unit sits in both amps' FX loops.
-- **Daisy patch** (MIDI ch. 3, one PC from the FCB's PC3 slot) -- 127 is dry
-  (an empty slot on the Daisy's card, which it also boots on).
+- **Daisy patch** (MIDI ch. 3, one PC from the FCB's PC3 slot) -- 126 is dry
+  (an empty slot on the Daisy's card, which it also boots on); 127 mutes it,
+  sent by the two mute presets only.
 
 Switches 1-4 are both amps (clean to dirty), 6-9 are one amp each, and 5 and
 10 mute everything. A muted Peavey is also put on its clean channel with the
