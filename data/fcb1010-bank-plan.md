@@ -13,7 +13,7 @@ The per-switch table lives in `fcb1010-bank-matrix.md`. The data itself is
 
 ## System Overview
 
-Every preset sets four things:
+Every preset sets five things:
 
 1. **Switch-Track routing** (MIDI ch2, one Program Change) -- which amps get
    signal. OUTA = Peavey, OUTB = Mesa. Factory presets, no programming.
@@ -21,6 +21,7 @@ Every preset sets four things:
    the Voodoo Lab Control Switcher (Channel, EQ, Solo1, Solo2 together).
 3. **Peavey channel** -- FCB1010 built-in relay SWITCH1.
 4. **Peavey FX loop** -- FCB1010 built-in relay SWITCH2.
+5. **Daisy Seed patch** (MIDI ch3, one Program Change) -- 127 = dry.
 
 No Control Changes are used.
 
@@ -101,11 +102,22 @@ muted patch regardless of `fcb_switch1_relay`.
 
 ## Daisy Seed (FX loops)
 
-A Daisy Seed effects unit sits in both amps' FX loops: Peavey send/return on
-the Daisy's left, Mesa on the right. That's why the Peavey's loop is on in
-every patch where the Peavey plays. Planned, not done: put the Daisy on the
-MIDI chain on its own channel (ch3 proposed) -- it answers PCs on every
-channel today, so it needs a channel filter first.
+A Daisy Seed effects unit (daisy-fx) sits in both amps' FX loops: Peavey
+send/return on the Daisy's left, Mesa on the right. That's why the Peavey's
+loop is on in every patch where the Peavey plays.
+
+The Daisy is on the end of the MIDI chain and answers program changes on
+**ch3 only**. Every FCB preset sends it one, from the FCB's PC3 slot
+(`daisy_pc` per patch, required). Program **127 is dry**: it's kept empty on
+the Daisy's SD card, and the Daisy also boots on it, so it's dry from
+power-up until a preset picks a patch. A patch chosen on the Daisy's own
+buttons lasts until the next FCB press. Patch names are in
+`meta.daisy_patches`.
+
+If either amp's loop is series, that amp is silent while the Daisy is off or
+booting -- dry still passes through the Daisy's converters. The Peavey can be
+taken out of the loop by opening SWITCH2; the Mesa's loop can't be switched
+from the FCB.
 
 ---
 
@@ -115,8 +127,9 @@ channel today, so it needs a channel filter first.
 ```
 FCB1010 MIDI OUT -> Voodoo Lab Control Switcher MIDI IN
 Control Switcher MIDI OUT (thru) -> Switch-Track MIDI IN
+Switch-Track MIDI OUT/THRU -> Daisy Seed MIDI IN
 ```
-Control Switcher listens on ch1, Switch-Track on ch2.
+Control Switcher listens on ch1, Switch-Track on ch2, Daisy on ch3.
 
 ### Audio
 ```

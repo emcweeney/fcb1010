@@ -204,7 +204,7 @@ was part of the rig until 2026-09-14; the three-amp version of everything is
 in git history (commit 380ea49 has the full combo matrix).
 
 `data/fcb1010-patch-data.json` holds one bank (bank 0) of 10 patches, which
-`bank_plan.py` compiles. Each patch sets four things:
+`bank_plan.py` compiles. Each patch sets five things:
 
 - **Switch-Track** (MIDI ch. 2, one PC) -- which amps get signal: OUTA =
   Peavey, OUTB = Mesa, using factory presets 1 (A), 3 (B), 5 (A+B) and
@@ -222,6 +222,8 @@ in git history (commit 380ea49 has the full combo matrix).
   footswitch jack (tip = loop, ring = channel) is split onto SWITCH1/SWITCH2
   with a TRS-to-2xTS Y cable. The loop is on whenever the Peavey plays,
   because a Daisy Seed effects unit sits in both amps' FX loops.
+- **Daisy patch** (MIDI ch. 3, one PC from the FCB's PC3 slot) -- 127 is dry
+  (an empty slot on the Daisy's card, which it also boots on).
 
 Switches 1-4 are both amps (clean to dirty), 6-9 are one amp each, and 5 and
 10 mute everything. A muted Peavey is also put on its clean channel with the

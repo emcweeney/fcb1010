@@ -40,6 +40,7 @@ MESA_MIDI_CHANNEL = 0          # Voodoo Lab Control Switcher - MIDI Channel 1
 #   made the Voodoo Lab's Mesa-channel LED react (back when Mesa used raw CC;
 #   the channel number itself is unaffected by the later switch to PC mode).
 SWITCHTRACK_MIDI_CHANNEL = 1   # Switch-Track - MIDI Channel 2
+DAISY_MIDI_CHANNEL = 2         # Daisy Seed (daisy-fx) - MIDI Channel 3
 #   CONFIRMED 2026-08-31 against real hardware: scripts/send_test_pc.py 2 3
 #   produced a real A-to-B transition (OUTB lit).
 
@@ -95,16 +96,20 @@ def load_patch_data(json_path):
     loop_relay = meta["peavey_fx_loop_switch2_relay"]
     if loop_relay not in ("on", "off"):
         raise ValueError(f"meta.peavey_fx_loop_switch2_relay must be 'on' or 'off', got {loop_relay!r}")
+    if meta["daisy_midi_channel"] != DAISY_MIDI_CHANNEL + 1:
+        raise ValueError(f"meta.daisy_midi_channel is {meta['daisy_midi_channel']}, "
+                         f"but bank_plan.py sends the Daisy on ch{DAISY_MIDI_CHANNEL + 1}")
     return meta["mesa_presets_pc"], loop_relay == "on", data["banks"]
 
 
 def apply_patch_data(fcb, mesa_presets_pc, fx_loop_relay_on, banks):
-    """Mutate an fcb1010 instance in place: set the two shared MIDI channels
+    """Mutate an fcb1010 instance in place: set the three shared MIDI channels
     and program every preset in `banks` (each a {"bank": n, "patches": [...]}
     dict). Any switch position in those banks not present in the data is
     cleared."""
     fcb.pc1_midi_channel = SWITCHTRACK_MIDI_CHANNEL
     fcb.pc2_midi_channel = MESA_MIDI_CHANNEL
+    fcb.pc3_midi_channel = DAISY_MIDI_CHANNEL
 
     populated = set()
     for bank_entry in banks:
@@ -142,6 +147,15 @@ def apply_patch_data(fcb, mesa_presets_pc, fx_loop_relay_on, banks):
             #   no stale-state risk the way the old CC82 mute hack had.
             preset.pc2_enabled = True
             preset.pc2_program = mesa_presets_pc[patch["mesa_preset"]]
+
+            #   Daisy Seed patch - Program Change on MIDI channel 3, sent on every
+            #   patch so a preset always sets the Daisy exactly (127 = dry, kept
+            #   empty on the Daisy's card). Required: no "leave the Daisy alone".
+            daisy_pc = patch.get("daisy_pc")
+            if not isinstance(daisy_pc, int) or not 0 <= daisy_pc <= 127:
+                raise ValueError(f"bank {bank} switch {switch}: daisy_pc must be 0-127, got {daisy_pc!r}")
+            preset.pc3_enabled = True
+            preset.pc3_program = daisy_pc
 
             #   Peavey channel - FCB1010's own built-in SWITCH1 relay, not MIDI
             #   (Y cable's RING leg). "on" = dirty, "off"/null = clean.
